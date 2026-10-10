@@ -24,7 +24,8 @@ and 2021 Subaru Crosstrek Limited, including relevant configuration differences.
 ## Google sign-in and local-network access
 
 The existing namespace Secret `google-oauth` supplies `GOOGLE_CLIENT_ID` and
-`GOOGLE_CLIENT_SECRET`. The chart injects them only into the web container with
+`GOOGLE_CLIENT_SECRET`, plus the optional `YOUTUBE_API_KEY`. The chart injects
+them only into the web container with
 explicit Secret references. Do not put values in Git, Helm values, logs, or chat.
 There is no SMTP dependency and Google access/refresh tokens are not retained.
 
@@ -190,11 +191,14 @@ roll back an application release.
 | `COOKIE_SECURE` | `true` in OpenShift; HTTPS-only cookies |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Existing `google-oauth` Secret, web container only |
 | `GOOGLE_AUTH_REQUIRED` | `true` by default; temporarily `false` only for initial callback verification |
-| `YOUTUBE_API_KEY` | Optional server-side key restricted to YouTube Data API v3 |
+| `YOUTUBE_API_KEY` | Optional `google-oauth` Secret key; server-side YouTube Data API v3 access |
 | `YOUTUBE_SEARCH_BUDGET` | Application search-request cap per Pacific day; default 80 |
 
-Add a YouTube key to the existing `garage-app` Secret using your normal secret
-management workflow, then restart the web Deployment. The key is never sent to
+Set `YOUTUBE_API_KEY` in the existing `google-oauth` Secret (selected by Helm
+value `googleOAuthSecret`), then restart the web Deployment after future key
+changes. The key reference is optional so installations without it retain search
+links. Expanding **How-to videos** loads up to three live API-discovered video
+cards, with shared caching; no OAuth permission from the user is needed. The key is never sent to
 the browser or logged. Public vehicle descriptors and task phrases are the only
 search data sent. No per-user YouTube authorization is needed. Results remain
 candidates, not verified mechanical instructions. Request cache: seven days for
@@ -276,5 +280,8 @@ Verified on OpenShift 4.22.4 with PostgreSQL 17:
   PostgreSQL pod restarts.
 - A logical backup was restored into an isolated, disposable PostgreSQL
   instance; all five configurations and 108 maintenance rules were restored.
-- Live YouTube API results remain unverified without an API key; mock-based
-  coverage exercises discovery, caching, and failures.
+- Live YouTube oil-change searches returned three video cards for each supported
+  vehicle. Rendered cards and cache reuse were checked without exposing the key;
+  mocked tests cover missing credentials, failures, quota limits, and removals.
+- The user confirmed real Google sign-in succeeded. Required login is enabled;
+  anonymous vehicle setup and legacy recovery redirect to Google sign-in.

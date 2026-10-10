@@ -122,6 +122,8 @@ spec:
               valueFrom: {secretKeyRef: {name: {{ .Values.googleOAuthSecret }}, key: GOOGLE_CLIENT_ID}}
             - name: GOOGLE_CLIENT_SECRET
               valueFrom: {secretKeyRef: {name: {{ .Values.googleOAuthSecret }}, key: GOOGLE_CLIENT_SECRET}}
+            - name: YOUTUBE_API_KEY
+              valueFrom: {secretKeyRef: {name: {{ .Values.googleOAuthSecret }}, key: YOUTUBE_API_KEY, optional: true}}
             - {name: GOOGLE_AUTH_REQUIRED, value: {{ .Values.googleAuthRequired | quote }}}
             - {name: ALLOWED_HOSTS, value: {{ printf "%s,localhost,127.0.0.1" .Values.host | quote }}}
             - {name: CSRF_TRUSTED_ORIGINS, value: {{ printf "https://%s" .Values.host | quote }}}
