@@ -1,0 +1,4 @@
+interface:
+  display_name: "Vehicle Maintenance"
+  short_description: "Maintain Garage features, tests, and deployment"
+  default_prompt: "Use $vehicle-maintenance to implement my requested change in the Garage repository and run the relevant checks."

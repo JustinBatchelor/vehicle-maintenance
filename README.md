@@ -88,6 +88,11 @@ afterward. Within each group, due-soon items precede more distant work.
 
 ## Local development
 
+Agents making changes can use the repository's
+[`vehicle-maintenance` skill](skills/vehicle-maintenance/SKILL.md), also linked
+from `AGENTS.md`. It covers the source map, domain rules, test selection and
+deployment procedure. When installed locally, invoke it with `$vehicle-maintenance`.
+
 With Python 3.13 and uv:
 
 ```sh
