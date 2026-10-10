@@ -1,3 +1,4 @@
-image: image-registry.openshift-image-registry.svc:5000/vehicle-maintenance/garage@sha256:7726b7f66cf3ef166d504e5e0b0561d88af5533af093c41c0048b664529efe75
+image: image-registry.openshift-image-registry.svc:5000/vehicle-maintenance/garage@sha256:9d9632fd4412e19100b27fd8478e80465e45e1b7a55ff74fcd7b8d10c880a504
 databaseImage: docker.io/library/postgres@sha256:3cec7eb015ba8adb28139fa5c83b8489cdf0e666e53dfdf20f598ae0cc8739e3
 host: garage.apps.sno.batchelor.live
+googleAuthRequired: false  # Initial real Google callback verification; claimed garages always require their owner.

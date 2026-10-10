@@ -7,6 +7,7 @@ from django.urls import reverse
 from garage.calculator import Baseline, Rule, Service, calculate
 from garage.models import Vehicle, VehicleConfiguration, MaintenanceItem, OdometerReading
 from garage.services import recommendations
+from conftest import account_client
 
 TODAY = date(2026, 10, 9)
 
@@ -116,7 +117,7 @@ def test_item_choices_override_assumption_and_can_be_reverted(browser,car):
 
 
 def test_assumption_obeys_conditions_and_ownership(browser,car):
-    other=Client();other.post('/start/')
+    other,user=account_client('other');other.get('/accounts/welcome/')
     path=reverse('vehicle-edit',args=[car.pk])
     data={'configuration':car.configuration_id,'conditions':['towing'],'assume_maintained':'on'}
     assert other.post(path,data).status_code==404

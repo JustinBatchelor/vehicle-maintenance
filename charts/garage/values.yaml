@@ -8,3 +8,6 @@ databaseSize: 5Gi
 backupSize: 5Gi
 replicas: 1
 youtubeSearchBudget: 80
+
+googleOAuthSecret: google-oauth
+googleAuthRequired: true

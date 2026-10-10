@@ -21,6 +21,8 @@ services:
       DJANGO_SECRET_KEY: local-development-only-not-for-deployment
       ALLOWED_HOSTS: localhost,127.0.0.1
       DEBUG: "true"
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
     ports: ["8080:8080"]
     depends_on:
       db:

@@ -12,4 +12,4 @@ COPY manage.py ./
 RUN python manage.py collectstatic --noinput && chmod -R a=rX /opt/app
 USER 1001
 EXPOSE 8080
-CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8080", "--workers", "2", "--threads", "4", "--timeout", "60", "--access-logfile", "-", "--error-logfile", "-", "--worker-tmp-dir", "/tmp"]
+CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8080", "--workers", "2", "--threads", "4", "--timeout", "60", "--access-logfile", "-", "--access-logformat", "%(h)s %(m)s %(U)s %(s)s %(L)s", "--error-logfile", "-", "--worker-tmp-dir", "/tmp"]

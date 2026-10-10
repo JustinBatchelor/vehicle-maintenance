@@ -1,6 +1,8 @@
 import pytest
 from django.core.management import call_command
 from django.test import Client
+from django.contrib.auth import get_user_model
+from allauth.socialaccount.models import SocialAccount
 from garage.models import Garage,Vehicle,VehicleConfiguration,OdometerReading
 from datetime import date
 
@@ -8,8 +10,16 @@ from datetime import date
 def catalog(db):
     call_command('import_schedules',verbosity=0)
 
+def account_client(label):
+    user=get_user_model().objects.create_user(username=label,email=label+'@example.com')
+    SocialAccount.objects.create(user=user,provider='google',uid=label)
+    client=Client();client.force_login(user,backend='allauth.account.auth_backends.AuthenticationBackend')
+    return client,user
+
 @pytest.fixture
-def garage(catalog):return Garage.objects.create()
+def garage(catalog):
+    client,user=account_client('owner')
+    return Garage.objects.create(owner=user)
 
 @pytest.fixture
 def car(garage):
@@ -19,4 +29,4 @@ def car(garage):
 
 @pytest.fixture
 def browser(garage):
-    client=Client();session=client.session;session['garage_id']=str(garage.pk);session.save();return client
+    client=Client();client.force_login(garage.owner,backend='allauth.account.auth_backends.AuthenticationBackend');return client

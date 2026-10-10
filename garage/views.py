@@ -5,6 +5,9 @@ from datetime import timedelta
 from functools import wraps
 from urllib.parse import urlencode
 from django.contrib import messages
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from . import accounts
 from django.db import connection, transaction
 from django.http import HttpResponse, JsonResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
@@ -23,7 +26,7 @@ def private(view):
     @wraps(view)
     @never_cache
     def wrapped(request,*args,**kwargs):
-        if not request.garage:return redirect("home")
+        if not request.garage:return redirect("account-welcome" if request.google_authenticated else "account_login")
         return view(request,*args,**kwargs)
     return wrapped
 
@@ -32,6 +35,7 @@ def owned_vehicle(request,pk):
 
 @never_cache
 def home(request):
+    if request.google_authenticated and not request.garage:return redirect("account-welcome")
     if not request.garage:return render(request,"garage/welcome.html")
     cars=[]; counts={"overdue":0,"due":0,"due-soon":0,"unknown":0}
     for car in request.garage.vehicles.select_related("configuration__schedule").order_by("created_at"):
@@ -45,6 +49,8 @@ def home(request):
 
 @require_POST
 def start(request):
+    if request.google_authenticated:return redirect("account-welcome")
+    if settings.GOOGLE_AUTH_REQUIRED:return redirect("account_login")
     if request.garage:return redirect("home")
     if not consume("start:"+client_key(request),10,3600):return HttpResponse("Too many new garages. Please try later.",status=429)
     garage=Garage.objects.create()
@@ -55,10 +61,11 @@ def start(request):
 
 @never_cache
 def recover(request):
+    if settings.GOOGLE_AUTH_REQUIRED or request.google_authenticated:return redirect("garage-import")
     if request.method=="POST":
         if not consume("recover:"+client_key(request),10,900):return HttpResponse("Too many attempts. Try again in 15 minutes.",status=429)
         token=request.POST.get("code","").strip()
-        garage=Garage.objects.filter(recovery_hash=hashlib.sha256(token.encode()).hexdigest()).first() if token else None
+        garage=Garage.objects.filter(owner__isnull=True,recovery_hash=hashlib.sha256(token.encode()).hexdigest()).first() if token else None
         if garage:
             request.session.flush()
             request.session["garage_id"]=str(garage.pk)
@@ -72,19 +79,19 @@ def settings_view(request):
     form=GarageForm(request.POST or None,instance=request.garage)
     code=None
     if request.method=="POST":
-        if request.POST.get("action")=="recovery":
+        if request.POST.get("action")=="recovery" and not request.google_authenticated and not settings.GOOGLE_AUTH_REQUIRED:
             code=secrets.token_urlsafe(32)
             request.garage.recovery_hash=hashlib.sha256(code.encode()).hexdigest()
             request.garage.save(update_fields=["recovery_hash"])
         elif form.is_valid():
             form.save();messages.success(request,"Garage settings saved.");return redirect("garage-settings")
-    return render(request,"garage/settings.html",{"form":form,"code":code})
+    return render(request,"account/settings.html" if request.google_authenticated else "garage/settings.html",{"form":form,"code":code})
 
 @private
 @require_POST
 def forget(request):
-    request.session.flush()
-    return redirect("home")
+    return accounts.sign_out(request)
+
 
 @private
 def vehicle_form(request,pk=None):
@@ -93,6 +100,9 @@ def vehicle_form(request,pk=None):
     form=VehicleForm(request.POST or None,instance=car)
     if request.method=="POST" and form.is_valid():
         with transaction.atomic():
+            if request.google_authenticated:
+                get_user_model().objects.select_for_update().get(pk=request.user.pk)
+            if not car and request.garage.vehicles.count()>=30:return HttpResponse("This garage has reached its 30-vehicle limit.",status=400)
             vehicle=form.save(commit=False);vehicle.garage=request.garage;vehicle.save()
             if not car:
                 OdometerReading.objects.create(vehicle=vehicle,miles=form.cleaned_data["initial_miles"],date=form.cleaned_data["reading_date"],engine_hours=form.cleaned_data["engine_hours"])

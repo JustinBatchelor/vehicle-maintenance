@@ -10,3 +10,6 @@ staticfiles/
 artifacts/
 *.pdf
 !tests/fixtures/*.pdf
+
+.auth/
+*storage-state*.json

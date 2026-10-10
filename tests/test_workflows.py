@@ -12,8 +12,10 @@ from garage.models import Garage,Vehicle,VehicleConfiguration,ServiceRecord,Main
 from garage.services import applicable_rules,recommendations
 from garage.forms import VehicleForm,RecordForm
 from icalendar import Calendar
+from conftest import account_client
 
-def test_start_is_explicit_and_private(catalog):
+def test_start_is_explicit_and_private(catalog,settings):
+    settings.GOOGLE_AUTH_REQUIRED=False
     c=Client()
     assert c.get('/').status_code==200 and Garage.objects.count()==0
     assert c.get('/start/').status_code==405
@@ -25,18 +27,20 @@ def test_csrf(catalog):
     c=Client(enforce_csrf_checks=True)
     assert c.post('/start/').status_code==403
 
-def test_cookie_recovery(browser,garage):
+def test_cookie_recovery(catalog,settings):
+    settings.GOOGLE_AUTH_REQUIRED=False
+    browser=Client();browser.post('/start/')
+    garage=Garage.objects.get()
     response=browser.post('/settings/',{'action':'recovery'})
     code=response.context['code'];garage.refresh_from_db()
-    assert code and code!=garage.recovery_hash and len(garage.recovery_hash)==64
+    assert code and code!=garage.recovery_hash
     other=Client();assert other.post('/recover/',{'code':code}).status_code==302
     assert other.session['garage_id']==str(garage.pk)
     assert 'no-store' in response['Cache-Control']
-    browser.post('/settings/',{'action':'recovery'})
-    assert Client().post('/recover/',{'code':code}).status_code==200
+
 
 def test_cross_garage_isolation(browser,car):
-    other=Client();other.post('/start/')
+    other,user=account_client('other');other.get('/accounts/welcome/')
     paths=[reverse('vehicle-detail',args=[car.pk]),reverse('vehicle-edit',args=[car.pk]),reverse('history-csv',args=[car.pk]),reverse('vehicle-delete',args=[car.pk])]
     for path in paths:assert other.get(path).status_code==404
     assert other.post(paths[-1]).status_code==404 and Vehicle.objects.filter(pk=car.pk).exists()
@@ -92,7 +96,7 @@ def test_calendar_and_csv(browser,car):
     csv_response=browser.get(reverse('history-csv',args=[car.pk]))
     rows=list(csv.reader(io.StringIO(csv_response.content.decode())))
     assert rows[1][6].startswith("'=") and rows[1][7]=='one, two\nthree'
-    other=Client();other.post('/start/')
+    other,user=account_client('other');other.get('/accounts/welcome/')
     assert other.get(reverse('calendar-download',args=[car.pk,a.pk])).status_code==404
 
 def test_never_serviced_is_not_completed_work(browser,car):

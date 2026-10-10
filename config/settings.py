@@ -40,3 +40,36 @@ YOUTUBE_SEARCH_BUDGET = int(os.getenv("YOUTUBE_SEARCH_BUDGET", "80"))
 LOGGING = {"version": 1, "disable_existing_loggers": False, "formatters": {"json": {"()": "garage.logging.JsonFormatter"}}, "handlers": {"console": {"class": "logging.StreamHandler", "formatter": "json"}}, "root": {"handlers": ["console"], "level": "INFO"}}
 # HTTPX logs complete request URLs at INFO; YouTube's API key is a query parameter.
 LOGGING["loggers"] = {"httpx": {"level": "WARNING"}, "httpcore": {"level": "WARNING"}}
+
+# Google is the only account provider. Legacy access is a temporary rollout switch;
+# it never grants access to a garage that already has an owner.
+GOOGLE_AUTH_REQUIRED = os.getenv("GOOGLE_AUTH_REQUIRED", "true").lower() == "true"
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
+INSTALLED_APPS += ["allauth", "allauth.account", "allauth.socialaccount", "allauth.socialaccount.providers.google"]
+MIDDLEWARE.insert(MIDDLEWARE.index("garage.middleware.GarageMiddleware"), "allauth.account.middleware.AccountMiddleware")
+AUTHENTICATION_BACKENDS = ["allauth.account.auth_backends.AuthenticationBackend"]
+SOCIALACCOUNT_ONLY = True
+SOCIALACCOUNT_ADAPTER = "garage.accounts.GoogleAccountAdapter"
+ACCOUNT_ADAPTER = "garage.accounts.AccountAdapter"
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = False
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = False
+SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_STORE_TOKENS = False
+SOCIALACCOUNT_LOGIN_ON_GET = False
+SOCIALACCOUNT_REQUESTS_TIMEOUT = 10
+ACCOUNT_EMAIL_VERIFICATION = "none"  # Verified Google email is enforced by our adapter.
+ACCOUNT_SIGNUP_FIELDS = ["email*"]
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_SESSION_REMEMBER = True
+ACCOUNT_EMAIL_NOTIFICATIONS = False
+ACCOUNT_RATE_LIMITS = {}  # Public entrypoints use our shared PostgreSQL limiter.
+LOGIN_URL = "account_login"
+LOGIN_REDIRECT_URL = "/accounts/welcome/"
+SOCIALACCOUNT_PROVIDERS = {"google": {
+    "APP": {"client_id": GOOGLE_CLIENT_ID, "secret": GOOGLE_CLIENT_SECRET, "key": ""},
+    "SCOPE": ["openid", "email", "profile"],
+    "AUTH_PARAMS": {"prompt": "select_account"},
+    "OAUTH_PKCE_ENABLED": True,
+}}
+LOGGING["loggers"]["allauth"] = {"level": "WARNING"}

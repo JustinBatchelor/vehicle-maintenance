@@ -2,6 +2,7 @@
 
 Touches only the created acceptance vehicle; does not print session credentials.
 """
+import os
 import subprocess
 import time
 from playwright.sync_api import sync_playwright,expect
@@ -16,8 +17,9 @@ def visit_after_restart(page,url):
         time.sleep(1)
     expect(page.get_by_role('heading',name='Persistence acceptance',exact=True)).to_be_visible()
 with sync_playwright() as p:
-    browser=p.chromium.launch();page=browser.new_page()
-    page.goto(base);page.get_by_role('button',name='Create my garage').click()
+    assert os.getenv('GARAGE_STORAGE_STATE'), 'Supply a dedicated Google test account browser storage state'
+    browser=p.chromium.launch();context=browser.new_context(storage_state=os.environ['GARAGE_STORAGE_STATE']);page=context.new_page()
+    page.goto(base+'/vehicles/new/')
     page.locator('#select-make').select_option('Subaru')
     page.locator('#id_nickname').fill('Persistence acceptance')
     page.locator('#id_initial_miles').fill('50000');page.locator('#id_reading_date').fill('2026-10-01')
@@ -35,6 +37,6 @@ with sync_playwright() as p:
     visit_after_restart(page,url)
     expect(page.locator('#history + .table-wrap')).to_contain_text('45000')
     page.goto(url+'delete/');page.get_by_role('button',name='Delete',exact=True).click()
-    page.goto(base+'/settings/');page.get_by_role('button',name='Disconnect this browser').click()
+    page.goto(base+'/settings/');page.get_by_role('button',name='Sign out').click()
     browser.close()
 print('PASS: browser garage and completed service survived web/database pod restarts')

@@ -2,9 +2,11 @@ import uuid
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.utils import timezone
+from django.conf import settings
 
 class Garage(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    owner = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.PROTECT, related_name="garage")
     name = models.CharField(max_length=80, default="My garage")
     timezone = models.CharField(max_length=80, default="America/New_York")
     recovery_hash = models.CharField(max_length=64, unique=True, null=True, blank=True)

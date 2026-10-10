@@ -1,30 +1,64 @@
 # Garage
 
-An account-free, private vehicle-maintenance tracker built with Django 5.2,
-Python 3.13, PostgreSQL 17, and locally served HTMX. Supports US-market 2010
-Ford F-150 King Ranch, 2012 Nissan Altima 3.5 SR, and 2021 Subaru Crosstrek
-Limited, including relevant configuration/operating-condition differences.
+A private vehicle-maintenance tracker built with Django 5.2, Python 3.13,
+PostgreSQL 17, and locally served HTMX. Google is the only account signup and
+login method. The same Google account opens the same garage on every device
+that can reach the application’s local network or VPN.
+
+Supports US-market 2010 Ford F-150 King Ranch, 2012 Nissan Altima 3.5 SR,
+and 2021 Subaru Crosstrek Limited, including relevant configuration differences.
 
 ## What ships
 
-- Manufacturer schedule references, due/overdue/upcoming/unknown states,
-  first/subsequent intervals, and condition-specific rules.
-- Multiple vehicles per private garage, mileage history, completed service
-  records, multi-item appointments, CSV export, and calendar downloads.
-- No signup, email service, or Google OAuth credentials required. A server-side
-  Django session identifies a garage; a secure browser cookie is its key.
-- Optional recovery codes are generated from 32 random bytes, stored only as
-  SHA-256 hashes, and shown once. They restore the same garage on another device.
-- "Add to Google Calendar" opens a prefilled event that the user must save.
-  It does not call Google APIs, confirm a save, prevent repeated saves in Google,
-  or synchronize updates. `.ics` is an independent optional alternative.
-- Every maintenance item has a dynamic vehicle-specific YouTube search link.
-  Video cards are optional: configure `YOUTUBE_API_KEY` to enable official API
-  discovery with labeled broader matches, caching, and quota controls.
+- Manufacturer schedules, required-first Upcoming filtering, first/subsequent
+  intervals, driving conditions, and explicit setup assumptions.
+- Multiple vehicles, mileage history, completed service, appointments, CSV
+  history, and ICS calendar downloads.
+- Google-only signup/login with verified identity, server-side sessions, and
+  explicit migration of browser-only garages into account ownership.
+- A prefilled Google Calendar event editor; the user must save the event.
+  No Calendar permission, automatic synchronization, or duplicate-save detection.
+- Vehicle-specific YouTube search links; optional video cards with a server-side
+  YouTube Data API key. No access to a user’s YouTube account.
 
-This release uses session-based access. Public account registration, email
-verification, Google sign-in, and direct Calendar API writes are outside its
-scope. No external credentials are needed for the core maintenance workflow.
+## Google sign-in and local-network access
+
+The existing namespace Secret `google-oauth` supplies `GOOGLE_CLIENT_ID` and
+`GOOGLE_CLIENT_SECRET`. The chart injects them only into the web container with
+explicit Secret references. Do not put values in Git, Helm values, logs, or chat.
+There is no SMTP dependency and Google access/refresh tokens are not retained.
+
+Register exactly this authorized redirect URI for the existing web OAuth client:
+
+`https://garage.apps.sno.batchelor.live/accounts/google/login/callback/`
+
+Only `openid email profile` scopes are requested. Google redirects the browser
+back to this local URL; Google does not need inbound access to the cluster.
+Browsers need both Google internet access and local DNS/network reachability.
+Web pods need outbound HTTPS/DNS to Google’s OAuth token and identity endpoints.
+Keep the configured Google consent audience/publishing state; do not classify
+an app as Workspace “Internal” merely because it is on a LAN. If production
+branding requires public informational pages, host those separately; do not
+expose the cluster to satisfy it.
+
+### Safe rollout
+
+`googleAuthRequired` defaults to `true`. For the first live callback check only,
+deploy with `googleAuthRequired: false`: old unclaimed garages continue to work
+and show a Connect with Google banner. Already claimed garages always require
+their Google owner, even in this transition mode. After a real Google login is
+verified, set the value to `true`, upgrade, and verify guest access is denied.
+Never return to an old guest-only image after any ownership claims. Roll back
+only to an account-aware image, or forward-fix while preserving ownership.
+
+Each first sign-in offers a confirmation for this browser’s existing garage.
+“Not now” preserves an import option in account settings. Recovery codes can be
+used only after Google sign-in to locate an unclaimed garage and confirm import.
+A successful claim invalidates the old code and browser-only access. Imports
+into an existing account preserve its name/timezone, keep vehicle IDs/history,
+and enforce the 30-vehicle limit atomically. Similar vehicles are not deduplicated.
+Unclaimed data is retained; without a valid old session or recovery code,
+ownership is not guessed. Recovery-code generation ends after required login.
 
 ## Starting maintenance assumptions
 
@@ -78,15 +112,19 @@ uv run pytest -q
 uv run python manage.py makemigrations --check --dry-run
 uv run python manage.py check
 uv run playwright install chromium
-GARAGE_URL=http://127.0.0.1:8000 uv run python scripts/browser_check.py
+GARAGE_LOCAL_TEST_ACCOUNT=1 GARAGE_URL=http://127.0.0.1:8000 uv run python scripts/browser_check.py
 helm lint charts/garage
 ```
 
 The browser check creates a disposable garage, exercises all three vehicle
-flows, desktop/mobile layouts, records, calendar/video links, recovery, and
+flows, desktop/mobile layouts, records, calendar/video links, account sessions, and
 isolation. It removes the vehicles afterward. Screenshots go to
 `BROWSER_ARTIFACTS` (default `/private/tmp/garage-browser-check`). It does not
-send data to Google or YouTube. External API behavior is covered with mocks;
+send data to Google or YouTube. Its local test-account fixture is restricted to
+loopback addresses and adds no server-side login bypass. For live browser tests,
+supply `GARAGE_STORAGE_STATE` for a dedicated Google test account; protect that
+file as a credential and never commit it. Real Google login must be verified
+interactively; mocked OAuth tests do not establish production consent. External API behavior is covered with mocks;
 live video-card checks require an actual API key.
 
 Dependency locks: `uv.lock` includes development tools; `requirements.lock`
@@ -150,6 +188,8 @@ roll back an application release.
 | `DJANGO_SECRET_KEY` | Stable, random server secret; created by provisioner |
 | `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` | Exact route/host values supplied by chart |
 | `COOKIE_SECURE` | `true` in OpenShift; HTTPS-only cookies |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Existing `google-oauth` Secret, web container only |
+| `GOOGLE_AUTH_REQUIRED` | `true` by default; temporarily `false` only for initial callback verification |
 | `YOUTUBE_API_KEY` | Optional server-side key restricted to YouTube Data API v3 |
 | `YOUTUBE_SEARCH_BUDGET` | Application search-request cap per Pacific day; default 80 |
 
@@ -162,24 +202,24 @@ results, one day for empty searches, five minutes for API errors; a daily cleanu
 removes metadata older than 30 days. Validate actual project quota before changing
 the cap. Existing schedules/records keep working during API outages.
 
-The operational Django admin has no pre-created login. If needed, provision an
-administrator interactively:
+The Django admin uses Google sign-in and requires staff permission. There is no
+password login or automatic promotion by email. After the intended administrator
+has signed in, an operator can grant privileges using the local Django user ID:
 
 ```sh
-oc -n vehicle-maintenance exec -it deploy/garage-web -- python manage.py createsuperuser
+oc -n vehicle-maintenance exec deploy/garage-web -- python manage.py grant_google_admin USER_ID
 ```
 
-End users never need these credentials. Catalog imports are preferable to editing
-a reviewed rule in place.
+Catalog imports are preferable to editing a reviewed rule in place.
 
 ## Persistence and recovery
 
-Cookies renew on use, expiring after one year of inactivity. Garages are not
-automatically deleted when sessions expire. Clearing a browser's cookie without
-a recovery code loses access; CSV is a history export, not a full garage backup.
-Save the optional recovery code before switching devices. Anyone holding it can
-access the garage. Rotating it invalidates the old code but leaves connected
-browsers connected. Disconnecting a browser flushes its session.
+Account sessions renew on use and expire after one year of inactivity. Clearing
+cookies or signing out does not delete the garage; sign in with the same Google
+account to return. Signing out affects only that browser. Maintenance filters
+are not synchronized and start at All maintenance. Account switching is done by
+signing out and choosing a different Google account; provider unlinking and
+email/password recovery are not available.
 
 Nightly PostgreSQL custom-format backups run at 03:00 America/New_York, retain
 14 days, and first verify the archive can be listed. Cache/session cleanup runs
@@ -223,13 +263,13 @@ protected against spreadsheet formula injection. HTMX is vendored with its licen
 
 Verified on OpenShift 4.22.4 with PostgreSQL 17:
 
-- 53 automated tests pass locally, including setup assumptions, milestone
-  boundaries, fixed starting points, history overrides, opt-out, and ownership.
-  The initial PostgreSQL release also passed its full 38-test suite plus three
-  relevant form tests after its final validation change.
+- Automated coverage includes Google OAuth callbacks with mocked provider
+  responses, verified identity, ownership, legacy claims, imports, disabled
+  password routes, and existing maintenance calculation/workflows. Concurrent
+  claims are tested against a disposable PostgreSQL database.
 - Live desktop/mobile browser checks cover all three vehicles, service logging,
-  appointments, ICS and Google event links, tutorial search links, garage
-  recovery, and isolation between browser sessions.
+  appointments, ICS and Google event links, tutorial search links, and isolation between browser sessions. Google-account
+  browser tests run locally with separate server-side sessions for the same user.
 - Header, content, and footer alignment checked at 390, 768, 960, 1440, and
   1920 pixel viewport widths without horizontal overflow.
 - A completed service record and its browser session survived both web and
