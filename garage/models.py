@@ -83,6 +83,10 @@ class Vehicle(models.Model):
     conditions = models.JSONField(default=list, blank=True)
     equipment = models.JSONField(default=list, blank=True)
     original_items = models.ManyToManyField(MaintenanceItem, blank=True, related_name="original_vehicles")
+    unknown_items = models.ManyToManyField(MaintenanceItem, blank=True, related_name="unknown_vehicles")
+    assumed_through_date = models.DateField(null=True, blank=True)
+    assumed_through_miles = models.PositiveIntegerField(null=True, blank=True)
+    assumed_through_hours = models.PositiveIntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self): return self.nickname or f"{self.configuration.year} {self.configuration.make} {self.configuration.model}"
     @property

@@ -96,6 +96,15 @@ def vehicle_form(request,pk=None):
             vehicle=form.save(commit=False);vehicle.garage=request.garage;vehicle.save()
             if not car:
                 OdometerReading.objects.create(vehicle=vehicle,miles=form.cleaned_data["initial_miles"],date=form.cleaned_data["reading_date"],engine_hours=form.cleaned_data["engine_hours"])
+            if form.cleaned_data["assume_maintained"] and vehicle.assumed_through_date is None:
+                reading = vehicle.latest_reading
+                if reading:
+                    vehicle.assumed_through_date = reading.date
+                    vehicle.assumed_through_miles = reading.miles
+                    vehicle.assumed_through_hours = reading.engine_hours
+            elif not form.cleaned_data["assume_maintained"]:
+                vehicle.assumed_through_date = vehicle.assumed_through_miles = vehicle.assumed_through_hours = None
+            vehicle.save(update_fields=["assumed_through_date", "assumed_through_miles", "assumed_through_hours"])
         messages.success(request,"Vehicle saved. Previous work can be added using Log service.")
         return redirect("vehicle-detail",pk=vehicle.pk)
     catalog=list(VehicleConfiguration.objects.filter(schedule__reviewed=True).values("id","make","model","year","trim","engine","transmission","drivetrain","condition_options","equipment_options"))
@@ -150,8 +159,13 @@ def original(request,pk,item_id):
         messages.error(request,"This task already has service history. Edit its records instead.")
     elif request.POST.get("clear"):
         car.original_items.remove(item_id)
+        car.unknown_items.add(item_id)
+    elif request.POST.get("assume") and car.assumed_through_date:
+        car.original_items.remove(item_id)
+        car.unknown_items.remove(item_id)
     else:
         car.original_items.add(item_id)
+        car.unknown_items.remove(item_id)
         messages.success(request,"Marked as never serviced. First-service limits now apply; no completed work was added.")
     return redirect("vehicle-detail",pk=pk)
 

@@ -26,6 +26,30 @@ This release uses session-based access. Public account registration, email
 verification, Google sign-in, and direct Calendar API writes are outside its
 scope. No external credentials are needed for the core maintenance workflow.
 
+## Starting maintenance assumptions
+
+New vehicle forms default to **Assume scheduled maintenance is up to date**.
+This stores a fixed mileage/date starting point, separate from completed service
+records and CSV exports. Uncheck it to start with unknown history. Existing
+vehicles retain their current behavior until the option is enabled in **Edit
+details**, using their latest observed mileage and date.
+
+Without actual history, the next mileage target is the next manufacturer
+milestone after the starting point, preserving different first and recurring
+intervals. For example, a normal-use Altima entered at 133,600 miles has its next
+7,500-mile oil milestone at 135,000 miles. It is not treated as freshly serviced
+at 133,600 miles. With an original in-service date, time targets use vehicle-age
+milestones; without one, the recurring time interval starts at the assumption
+date and this is explained on each task. As-needed rules stay conditional, and
+missing engine-hour readings stay unknown where required.
+
+Actual service history, including backdated entries, takes precedence per item.
+Each item also allows **Confirm never serviced**, **Mark history unknown**, or
+**Use setup assumption**. Updating mileage or editing details does not advance
+the starting point. Disable the assumption to remove it; re-enabling starts from
+the latest observation. The Upcoming filter includes due-soon work as well as
+more distant maintenance.
+
 ## Local development
 
 With Python 3.13 and uv:
@@ -198,8 +222,10 @@ protected against spreadsheet formula injection. HTMX is vendored with its licen
 
 Verified on OpenShift 4.22.4 with PostgreSQL 17:
 
-- 39 automated tests pass locally; the PostgreSQL run passed its full 38-test
-  suite plus the three relevant form tests after the final validation change.
+- 53 automated tests pass locally, including setup assumptions, milestone
+  boundaries, fixed starting points, history overrides, opt-out, and ownership.
+  The initial PostgreSQL release also passed its full 38-test suite plus three
+  relevant form tests after its final validation change.
 - Live desktop/mobile browser checks cover all three vehicles, service logging,
   appointments, ICS and Google event links, tutorial search links, garage
   recovery, and isolation between browser sessions.

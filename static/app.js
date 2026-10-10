@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (filter) filter.addEventListener('change', () => {
     let shown = 0;
     document.querySelectorAll('.tasks .task').forEach(task => {
-      const match = filter.value === 'all' || (filter.value === 'attention' ? ['overdue','due','due-soon'].includes(task.dataset.status) : task.dataset.status === filter.value);
+      const match = filter.value === 'all' || (filter.value === 'attention' ? ['overdue','due','due-soon'].includes(task.dataset.status) : filter.value === 'upcoming' ? ['upcoming','due-soon'].includes(task.dataset.status) : task.dataset.status === filter.value);
       task.hidden = !match; if (match) shown++;
     });
     document.getElementById('no-filter-results').hidden = shown > 0;

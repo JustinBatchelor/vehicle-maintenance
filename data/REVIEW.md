@@ -58,12 +58,20 @@ the page-28 table and read page-29 notes and page-27 continuation guidance.
 `milestone` rules follow original odometer/vehicle-age columns. `service` rules
 follow elapsed limits since actual service, including oil and subsequent coolant
 replacement. `conditional` rules retain source notes without turning alternatives
-or condition checks into a fabricated fixed deadline. Initial replacements are
-calculated only after the user explicitly confirms an item has never been
-serviced; absence of a record is not that confirmation.
+or condition checks into a fabricated fixed deadline. Confirming an item has
+never been serviced applies its initial limits; absence of a record alone is
+not that confirmation.
+
+The optional setup assumption uses the next original mileage/age milestone
+after the entered starting point, including first/subsequent limits, until
+actual history is available. Without an in-service date, assumed time cycles
+start at the entered date using recurring intervals. This planning assumption
+is labeled in the UI and creates no completed service records. It does not
+change the reviewed manufacturer intervals in this dataset.
 
 The latest recorded service establishes the known baseline, but does not prove
-that earlier work occurred. Backdated work cannot replace a later baseline.
+that earlier work occurred. Backdated work cannot replace a later recorded
+service; actual work does override a setup assumption for that item.
 Source references and notes remain visible so users can check applicability,
 especially for modified vehicles or non-original fluid types. These datasets
 cover scheduled maintenance in the cited publications, not diagnostics, recalls,

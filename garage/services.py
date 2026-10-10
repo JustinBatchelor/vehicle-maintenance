@@ -1,6 +1,6 @@
 from dataclasses import fields
 from django.utils import timezone
-from .calculator import Rule, Service, calculate
+from .calculator import Rule, Service, Baseline, calculate
 from .models import MaintenanceRule
 
 def applicable_rules(vehicle):
@@ -22,11 +22,14 @@ def recommendations(vehicle):
     records = list(vehicle.records.all())
     rows = []
     originals = set(vehicle.original_items.values_list("id", flat=True))
+    unknowns = set(vehicle.unknown_items.values_list("id", flat=True))
+    baseline = Baseline(vehicle.assumed_through_date, vehicle.assumed_through_miles, vehicle.assumed_through_hours) if vehicle.assumed_through_date is not None and vehicle.assumed_through_miles is not None else None
     for rule in applicable_rules(vehicle):
         history = [Service(r.date, r.miles, r.engine_hours) for r in records if r.item_id == rule.item_id]
         due = calculate(Rule(**{f.name: getattr(rule, f.name) for f in fields(Rule)}), today=timezone.localdate(),
                         miles=reading.miles if reading else 0, in_service=vehicle.in_service_date,
-                        engine_hours=reading.engine_hours if reading else None, services=history, never_serviced=rule.item_id in originals)
+                        engine_hours=reading.engine_hours if reading else None, services=history, never_serviced=rule.item_id in originals,
+                        baseline=baseline if rule.item_id not in unknowns else None)
         rows.append({"rule": rule, "item": rule.item, "due": due, "last": max(history, key=lambda s: (s.date,s.miles)) if history else None})
     order = {"overdue": 0, "due": 1, "due-soon": 2, "unknown": 3, "upcoming": 4, "as-needed": 5}
     return sorted(rows, key=lambda r: (order[r["due"].status], r["item"].name))

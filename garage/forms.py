@@ -17,6 +17,9 @@ class VehicleForm(StyledForm):
     initial_miles = forms.IntegerField(min_value=0, max_value=3000000, label="Current odometer (miles)")
     reading_date = forms.DateField(initial=timezone.localdate, widget=forms.DateInput(attrs={"type":"date"}))
     engine_hours = forms.IntegerField(min_value=0, required=False, help_text="Optional. Used for Ford's extensive-idling oil-change limit.")
+    assume_maintained = forms.BooleanField(required=False, initial=True,
+        label="Assume scheduled maintenance is up to date",
+        help_text="Assume required maintenance through this mileage and reading date was completed. Show the next scheduled intervals without creating service records. Uncheck if prior maintenance is unknown.")
     class Meta:
         model = Vehicle
         fields = ["configuration", "nickname", "in_service_date", "conditions", "equipment"]
@@ -34,6 +37,14 @@ class VehicleForm(StyledForm):
             self.fields["equipment"].choices = list(config.equipment_options.items())
         if not self.instance._state.adding:
             for key in ["initial_miles", "reading_date", "engine_hours"]: self.fields.pop(key)
+            self.fields["assume_maintained"].initial = self.instance.assumed_through_date is not None
+            if self.instance.assumed_through_date:
+                self.fields["assume_maintained"].help_text = (
+                    f"Prior maintenance is assumed complete through {self.instance.assumed_through_miles:,} miles "
+                    f"on {self.instance.assumed_through_date}. This starting point stays fixed as mileage increases. "
+                    "Uncheck to remove the assumption. Actual service records and per-item history choices take precedence.")
+            else:
+                self.fields["assume_maintained"].help_text = "Use the latest mileage reading and its date as the starting point. Actual service records and per-item history choices take precedence."
     def clean_in_service_date(self):
         date = self.cleaned_data["in_service_date"]
         if date and date > timezone.localdate(): raise ValidationError("In-service date cannot be in the future.")
@@ -51,6 +62,8 @@ class VehicleForm(StyledForm):
                 raise ValidationError("Add a separate vehicle for a different make, model, year or trim so its service history stays separate.")
         if data.get("in_service_date") and data.get("reading_date") and data["in_service_date"] > data["reading_date"]:
             raise ValidationError("The mileage reading cannot predate the original in-service date.")
+        if data.get("assume_maintained") and self.instance.assumed_through_date and data.get("in_service_date") and data["in_service_date"] > self.instance.assumed_through_date:
+            raise ValidationError("The original in-service date cannot be after the maintenance assumption date.")
         return data
 
 def validate_timeline(vehicle, date, miles, exclude_record=None, exclude_reading=None):

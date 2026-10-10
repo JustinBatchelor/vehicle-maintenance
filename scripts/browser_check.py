@@ -26,9 +26,14 @@ with sync_playwright() as p:
         page.locator('#id_in_service_date').fill('2021-01-01' if make=='Subaru' else '2012-01-01' if make=='Nissan' else '2010-01-01')
         page.locator('#id_initial_miles').fill(str(mileage))
         page.locator('#id_reading_date').fill('2026-10-01')
+        expect(page.locator('#id_assume_maintained')).to_be_checked()
         page.get_by_role('button',name='Save vehicle').click()
         expect(page.get_by_role('heading',name='Browser acceptance '+make,exact=True)).to_be_visible()
         assert page.locator('.task').count()>10
+        expect(page.get_by_role('heading',name='Starting with maintenance up to date')).to_be_visible()
+        page.locator('#status-filter').select_option('upcoming')
+        assert page.locator('.task:visible').count()>0
+        page.locator('#status-filter').select_option('all')
         urls.append(page.url)
     page.goto(base);expect(page.locator('.vehicle-card')).to_have_count(3)
     page.screenshot(path=str(out/'garage-desktop.png'),full_page=True)
