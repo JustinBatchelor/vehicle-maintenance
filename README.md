@@ -48,7 +48,8 @@ Each item also allows **Confirm never serviced**, **Mark history unknown**, or
 **Use setup assumption**. Updating mileage or editing details does not advance
 the starting point. Disable the assumption to remove it; re-enabling starts from
 the latest observation. The Upcoming filter includes due-soon work as well as
-more distant maintenance.
+more distant maintenance, with required items first and optional recommendations
+afterward. Within each group, due-soon items precede more distant work.
 
 ## Local development
 

@@ -3,14 +3,23 @@ document.addEventListener('DOMContentLoaded', () => {
     details.addEventListener('toggle', () => { if (details.open && window.htmx) htmx.trigger(details.querySelector('.video-loader'), 'tutorials'); });
   });
   const filter = document.getElementById('status-filter');
-  if (filter) filter.addEventListener('change', () => {
-    let shown = 0;
-    document.querySelectorAll('.tasks .task').forEach(task => {
-      const match = filter.value === 'all' || (filter.value === 'attention' ? ['overdue','due','due-soon'].includes(task.dataset.status) : filter.value === 'upcoming' ? ['upcoming','due-soon'].includes(task.dataset.status) : task.dataset.status === filter.value);
-      task.hidden = !match; if (match) shown++;
+  if (filter) {
+    const tasks = document.querySelector('.tasks');
+    const originalOrder = [...tasks.querySelectorAll('.task')];
+    filter.addEventListener('change', () => {
+      // Keep the server's urgency order within each group and restore it for other filters.
+      const ordered = filter.value === 'upcoming'
+        ? [...originalOrder].sort((a, b) => Number(a.dataset.optional === 'true') - Number(b.dataset.optional === 'true'))
+        : originalOrder;
+      tasks.append(...ordered);
+      let shown = 0;
+      ordered.forEach(task => {
+        const match = filter.value === 'all' || (filter.value === 'attention' ? ['overdue','due','due-soon'].includes(task.dataset.status) : filter.value === 'upcoming' ? ['upcoming','due-soon'].includes(task.dataset.status) : task.dataset.status === filter.value);
+        task.hidden = !match; if (match) shown++;
+      });
+      document.getElementById('no-filter-results').hidden = shown > 0;
     });
-    document.getElementById('no-filter-results').hidden = shown > 0;
-  });
+  }
   const catalogNode = document.getElementById('vehicle-catalog');
   if (!catalogNode) return;
   const catalog = JSON.parse(catalogNode.textContent);
