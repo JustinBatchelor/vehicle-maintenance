@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+htmlcov/
+*.sqlite3
+.env
+staticfiles/
+artifacts/
+*.pdf
+!tests/fixtures/*.pdf

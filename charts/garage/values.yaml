@@ -1,0 +1,10 @@
+image: image-registry.openshift-image-registry.svc:5000/vehicle-maintenance/garage:latest
+host: garage.apps.sno.batchelor.live
+appSecret: garage-app
+dbSecret: garage-db
+storageClass: truenas-nfs
+databaseImage: docker.io/library/postgres:17
+databaseSize: 5Gi
+backupSize: 5Gi
+replicas: 1
+youtubeSearchBudget: 80

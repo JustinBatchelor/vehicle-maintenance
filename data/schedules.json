@@ -1,0 +1,1527 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "key": "ford-2010",
+      "title": "2010 Ford Scheduled Maintenance Guide",
+      "publication": "2nd printing, USA",
+      "url": "https://www.fordservicecontent.com/Ford_Content/catalog/owner_guides/10frdmg2e.pdf",
+      "sha256": "575226aaf03dec403c716e3c25a14925a389991af077c7a902a4c8b5f26513d9"
+    },
+    {
+      "key": "nissan-2012",
+      "title": "2012 Nissan Service and Maintenance Guide",
+      "publication": "2012 US maintenance booklet",
+      "url": "https://owners.nissanusa.com/content/techpub/common/2012/2012-nissan-service-maintenance-guide.pdf",
+      "sha256": "37a6b9425a73ffa0c59b9f71b00471c7a9dc202dc7fcda6259da8f75dd78231e"
+    },
+    {
+      "key": "subaru-2021",
+      "title": "2021 Subaru Warranty and Maintenance Booklet",
+      "publication": "MSA5M2101W, US",
+      "url": "https://techinfo.subaru.com/stis/doc/warrantyBooklet/2021_war_and_maint__081120.pdf",
+      "sha256": "11afb9c2faaf27e068fd162c4f4315f187e6599d38c714374389de49f23b7984"
+    }
+  ],
+  "items": [
+    {
+      "key": "oil",
+      "name": "Engine oil and filter",
+      "action": "replace",
+      "search_phrase": "Engine oil and filter replace how to"
+    },
+    {
+      "key": "tires",
+      "name": "Tire rotation and wear check",
+      "action": "perform",
+      "search_phrase": "Tire rotation and wear check perform how to"
+    },
+    {
+      "key": "air",
+      "name": "Engine air filter",
+      "action": "replace",
+      "search_phrase": "Engine air filter replace how to"
+    },
+    {
+      "key": "air-check",
+      "name": "Engine air filter inspection",
+      "action": "inspect",
+      "search_phrase": "Engine air filter inspection inspect how to"
+    },
+    {
+      "key": "cabin",
+      "name": "Cabin air filter",
+      "action": "replace",
+      "search_phrase": "Cabin air filter replace how to"
+    },
+    {
+      "key": "cabin-check",
+      "name": "Cabin air filter inspection",
+      "action": "inspect",
+      "search_phrase": "Cabin air filter inspection inspect how to"
+    },
+    {
+      "key": "coolant",
+      "name": "Engine coolant",
+      "action": "replace",
+      "search_phrase": "Engine coolant replace how to"
+    },
+    {
+      "key": "plugs",
+      "name": "Spark plugs",
+      "action": "replace",
+      "search_phrase": "Spark plugs replace how to"
+    },
+    {
+      "key": "brakes",
+      "name": "Brake pads, discs and hardware",
+      "action": "inspect",
+      "search_phrase": "Brake pads, discs and hardware inspect how to"
+    },
+    {
+      "key": "brake-lines",
+      "name": "Brake lines and parking/service brake operation",
+      "action": "inspect",
+      "search_phrase": "Brake lines and parking/service brake operation inspect how to"
+    },
+    {
+      "key": "brake-fluid",
+      "name": "Brake fluid",
+      "action": "replace",
+      "search_phrase": "Brake fluid replace how to"
+    },
+    {
+      "key": "brake-fluid-check",
+      "name": "Brake fluid inspection",
+      "action": "inspect",
+      "search_phrase": "Brake fluid inspection inspect how to"
+    },
+    {
+      "key": "boots",
+      "name": "Axle boots and joints",
+      "action": "inspect",
+      "search_phrase": "Axle boots and joints inspect how to"
+    },
+    {
+      "key": "steering",
+      "name": "Steering and suspension",
+      "action": "inspect",
+      "search_phrase": "Steering and suspension inspect how to"
+    },
+    {
+      "key": "cooling",
+      "name": "Cooling system and hoses",
+      "action": "inspect",
+      "search_phrase": "Cooling system and hoses inspect how to"
+    },
+    {
+      "key": "fuel-lines",
+      "name": "Fuel lines and connections",
+      "action": "inspect",
+      "search_phrase": "Fuel lines and connections inspect how to"
+    },
+    {
+      "key": "evap",
+      "name": "Fuel vapor hoses",
+      "action": "inspect",
+      "search_phrase": "Fuel vapor hoses inspect how to"
+    },
+    {
+      "key": "exhaust",
+      "name": "Exhaust system",
+      "action": "inspect",
+      "search_phrase": "Exhaust system inspect how to"
+    },
+    {
+      "key": "belts",
+      "name": "Accessory drive belts",
+      "action": "inspect",
+      "search_phrase": "Accessory drive belts inspect how to"
+    },
+    {
+      "key": "belts-replace",
+      "name": "Accessory drive belt replacement",
+      "action": "replace",
+      "search_phrase": "Accessory drive belt replacement replace how to"
+    },
+    {
+      "key": "cvt",
+      "name": "CVT fluid",
+      "action": "inspect",
+      "search_phrase": "CVT fluid inspect how to"
+    },
+    {
+      "key": "cvt-replace",
+      "name": "CVT fluid replacement",
+      "action": "replace",
+      "search_phrase": "CVT fluid replacement replace how to"
+    },
+    {
+      "key": "at-fluid",
+      "name": "Automatic transmission fluid and filter",
+      "action": "replace",
+      "search_phrase": "Automatic transmission fluid and filter replace how to"
+    },
+    {
+      "key": "at-check",
+      "name": "Automatic transmission fluid level",
+      "action": "inspect",
+      "search_phrase": "Automatic transmission fluid level inspect how to"
+    },
+    {
+      "key": "mt-fluid",
+      "name": "Manual transmission oil",
+      "action": "inspect",
+      "search_phrase": "Manual transmission oil inspect how to"
+    },
+    {
+      "key": "mt-replace",
+      "name": "Manual transmission oil replacement",
+      "action": "replace",
+      "search_phrase": "Manual transmission oil replacement replace how to"
+    },
+    {
+      "key": "diff",
+      "name": "Front and rear differential oil",
+      "action": "inspect",
+      "search_phrase": "Front and rear differential oil inspect how to"
+    },
+    {
+      "key": "diff-replace",
+      "name": "Front and rear differential oil replacement",
+      "action": "replace",
+      "search_phrase": "Front and rear differential oil replacement replace how to"
+    },
+    {
+      "key": "front-diff",
+      "name": "Front differential fluid",
+      "action": "replace",
+      "search_phrase": "Front differential fluid replace how to"
+    },
+    {
+      "key": "rear-diff",
+      "name": "Rear axle lubricant",
+      "action": "replace",
+      "search_phrase": "Rear axle lubricant replace how to"
+    },
+    {
+      "key": "transfer",
+      "name": "Transfer case fluid",
+      "action": "replace",
+      "search_phrase": "Transfer case fluid replace how to"
+    },
+    {
+      "key": "ujoints",
+      "name": "Driveshaft U-joints",
+      "action": "inspect",
+      "search_phrase": "Driveshaft U-joints inspect how to"
+    },
+    {
+      "key": "wheel",
+      "name": "Wheels and related components",
+      "action": "inspect",
+      "search_phrase": "Wheels and related components inspect how to"
+    },
+    {
+      "key": "wheel-bearing",
+      "name": "Wheel bearings",
+      "action": "inspect",
+      "search_phrase": "Wheel bearings inspect how to"
+    },
+    {
+      "key": "seat-filter",
+      "name": "Climate-controlled seat filters",
+      "action": "replace",
+      "search_phrase": "Climate-controlled seat filters replace how to"
+    },
+    {
+      "key": "fuel-filter",
+      "name": "Fuel filter",
+      "action": "replace",
+      "search_phrase": "Fuel filter replace how to"
+    },
+    {
+      "key": "multi",
+      "name": "Multi-point inspection",
+      "action": "inspect",
+      "search_phrase": "Multi-point inspection inspect how to"
+    },
+    {
+      "key": "lights",
+      "name": "Exterior and interior lights",
+      "action": "inspect",
+      "search_phrase": "Exterior and interior lights inspect how to"
+    },
+    {
+      "key": "pressure",
+      "name": "Tire pressure including spare",
+      "action": "inspect",
+      "search_phrase": "Tire pressure including spare inspect how to"
+    },
+    {
+      "key": "oil-level",
+      "name": "Engine oil level",
+      "action": "inspect",
+      "search_phrase": "Engine oil level inspect how to"
+    },
+    {
+      "key": "washer",
+      "name": "Windshield washer fluid",
+      "action": "inspect",
+      "search_phrase": "Windshield washer fluid inspect how to"
+    },
+    {
+      "key": "belts-latches",
+      "name": "Seat belts and seat latches",
+      "action": "inspect",
+      "search_phrase": "Seat belts and seat latches inspect how to"
+    },
+    {
+      "key": "spare",
+      "name": "Spare tire mounting",
+      "action": "inspect",
+      "search_phrase": "Spare tire mounting inspect how to"
+    },
+    {
+      "key": "power-steering",
+      "name": "Power steering fluid level",
+      "action": "inspect",
+      "search_phrase": "Power steering fluid level inspect how to"
+    },
+    {
+      "key": "wipers",
+      "name": "Wipers and washer operation",
+      "action": "inspect",
+      "search_phrase": "Wipers and washer operation inspect how to"
+    },
+    {
+      "key": "locks",
+      "name": "Door hinges, locks and weatherstrips",
+      "action": "perform",
+      "search_phrase": "Door hinges, locks and weatherstrips perform how to"
+    },
+    {
+      "key": "drains",
+      "name": "Body and door drains",
+      "action": "inspect",
+      "search_phrase": "Body and door drains inspect how to"
+    },
+    {
+      "key": "warning-lights",
+      "name": "Safety warning lamps",
+      "action": "inspect",
+      "search_phrase": "Safety warning lamps inspect how to"
+    },
+    {
+      "key": "coolant-level",
+      "name": "Coolant level and strength",
+      "action": "inspect",
+      "search_phrase": "Coolant level and strength inspect how to"
+    },
+    {
+      "key": "battery",
+      "name": "Battery connections",
+      "action": "inspect",
+      "search_phrase": "Battery connections inspect how to"
+    },
+    {
+      "key": "valves",
+      "name": "Valve clearance when noise increases",
+      "action": "inspect",
+      "search_phrase": "Valve clearance when noise increases inspect how to"
+    },
+    {
+      "key": "radiator-cap",
+      "name": "Radiator cap",
+      "action": "replace",
+      "search_phrase": "Radiator cap replace how to"
+    },
+    {
+      "key": "wipers-replace",
+      "name": "Wiper blades",
+      "action": "replace",
+      "search_phrase": "Wiper blades replace how to"
+    },
+    {
+      "key": "e85",
+      "name": "Gasoline fill when running exclusively on E85",
+      "action": "perform",
+      "search_phrase": "Gasoline fill when running exclusively on E85 perform how to"
+    }
+  ],
+  "schedules": [
+    {
+      "key": "f150-2010",
+      "version": "2026.10.09.2",
+      "source": "ford-2010",
+      "reviewed": true,
+      "reviewed_on": "2026-10-09",
+      "review_notes": "Truck schedule pp.14\u201327, special conditions pp.41\u201345, axle exception p.47. 6R80 excludes severe 30k ATF change. No scheduled F-150 fuel-filter replacement. Pages are PDF page numbers.",
+      "rules": [
+        {
+          "key": "oil-0",
+          "item": "oil",
+          "miles": 7500,
+          "months": 6,
+          "page": 5,
+          "basis": "service"
+        },
+        {
+          "key": "oil-1",
+          "item": "oil",
+          "miles": 5000,
+          "months": 6,
+          "page": 41,
+          "basis": "service",
+          "conditions_any": [
+            "towing",
+            "idling",
+            "dust",
+            "offroad",
+            "e85"
+          ],
+          "priority": 10
+        },
+        {
+          "key": "oil-2",
+          "item": "oil",
+          "miles": 5000,
+          "months": 6,
+          "page": 42,
+          "basis": "service",
+          "hours": 200,
+          "conditions_any": [
+            "idling"
+          ],
+          "priority": 20,
+          "notes": "Also limited to 200 engine hours; record engine hours to evaluate this limit."
+        },
+        {
+          "key": "tires-3",
+          "item": "tires",
+          "miles": 7500,
+          "months": null,
+          "page": 14
+        },
+        {
+          "key": "tires-4",
+          "item": "tires",
+          "miles": 5000,
+          "months": null,
+          "page": 41,
+          "conditions_any": [
+            "towing",
+            "idling",
+            "dust",
+            "offroad",
+            "e85"
+          ],
+          "priority": 10
+        },
+        {
+          "key": "wheel-5",
+          "item": "wheel",
+          "miles": 7500,
+          "months": null,
+          "page": 14
+        },
+        {
+          "key": "wheel-6",
+          "item": "wheel",
+          "miles": 5000,
+          "months": null,
+          "page": 41,
+          "conditions_any": [
+            "towing",
+            "idling",
+            "dust",
+            "offroad",
+            "e85"
+          ],
+          "priority": 10
+        },
+        {
+          "key": "steering-7",
+          "item": "steering",
+          "miles": 15000,
+          "months": null,
+          "page": 14
+        },
+        {
+          "key": "cooling-8",
+          "item": "cooling",
+          "miles": 15000,
+          "months": null,
+          "page": 14
+        },
+        {
+          "key": "brakes-9",
+          "item": "brakes",
+          "miles": 15000,
+          "months": null,
+          "page": 14
+        },
+        {
+          "key": "brake-lines-10",
+          "item": "brake-lines",
+          "miles": 15000,
+          "months": null,
+          "page": 14
+        },
+        {
+          "key": "boots-11",
+          "item": "boots",
+          "miles": 15000,
+          "months": null,
+          "page": 14
+        },
+        {
+          "key": "exhaust-12",
+          "item": "exhaust",
+          "miles": 15000,
+          "months": null,
+          "page": 14
+        },
+        {
+          "key": "brakes-13",
+          "item": "brakes",
+          "miles": 5000,
+          "months": null,
+          "page": 42,
+          "conditions_any": [
+            "idling"
+          ],
+          "priority": 10
+        },
+        {
+          "key": "at-check-14",
+          "item": "at-check",
+          "miles": 15000,
+          "months": null,
+          "page": 14,
+          "equipment_all": [
+            "at_dipstick"
+          ]
+        },
+        {
+          "key": "ujoints-15",
+          "item": "ujoints",
+          "miles": 15000,
+          "months": null,
+          "page": 14,
+          "drivetrain": "4x4",
+          "notes": "Inspect; lubricate only joints fitted with lubrication points."
+        },
+        {
+          "key": "ujoints-16",
+          "item": "ujoints",
+          "miles": 5000,
+          "months": 6,
+          "page": 41,
+          "conditions_any": [
+            "towing",
+            "idling",
+            "dust"
+          ],
+          "priority": 10,
+          "notes": "Inspect and lubricate applicable joints; inspect more frequently under towing."
+        },
+        {
+          "key": "ujoints-17",
+          "item": "ujoints",
+          "miles": null,
+          "months": null,
+          "page": 45,
+          "basis": "conditional",
+          "conditions_any": [
+            "offroad"
+          ],
+          "priority": 20,
+          "notes": "Check frequently after off-road operation; lubricate only if fittings exist."
+        },
+        {
+          "key": "air-18",
+          "item": "air",
+          "miles": 30000,
+          "months": null,
+          "page": 16
+        },
+        {
+          "key": "air-check-19",
+          "item": "air-check",
+          "miles": null,
+          "months": null,
+          "page": 44,
+          "basis": "conditional",
+          "conditions_any": [
+            "dust"
+          ],
+          "notes": "Inspect frequently and replace as required in dusty operation."
+        },
+        {
+          "key": "cabin-check-20",
+          "item": "cabin-check",
+          "miles": 7500,
+          "months": null,
+          "page": 14,
+          "equipment_all": [
+            "cabin_filter"
+          ]
+        },
+        {
+          "key": "cabin-21",
+          "item": "cabin",
+          "miles": 15000,
+          "months": null,
+          "page": 14,
+          "equipment_all": [
+            "cabin_filter"
+          ]
+        },
+        {
+          "key": "seat-filter-22",
+          "item": "seat-filter",
+          "miles": 30000,
+          "months": null,
+          "page": 16,
+          "equipment_all": [
+            "seat_filter"
+          ]
+        },
+        {
+          "key": "plugs-23",
+          "item": "plugs",
+          "miles": 90000,
+          "months": null,
+          "page": 22
+        },
+        {
+          "key": "plugs-24",
+          "item": "plugs",
+          "miles": 60000,
+          "months": null,
+          "page": 42,
+          "conditions_any": [
+            "idling"
+          ],
+          "priority": 10
+        },
+        {
+          "key": "coolant-25",
+          "item": "coolant",
+          "miles": 45000,
+          "months": 36,
+          "page": 5,
+          "first_miles": 105000,
+          "first_months": 72,
+          "basis": "service",
+          "notes": "First replacement at 105,000 mi / 6 years; subsequent replacements every 45,000 mi / 3 years."
+        },
+        {
+          "key": "belts-26",
+          "item": "belts",
+          "miles": 30000,
+          "months": null,
+          "page": 22,
+          "first_miles": 90000
+        },
+        {
+          "key": "belts-replace-27",
+          "item": "belts-replace",
+          "miles": null,
+          "months": null,
+          "page": 27,
+          "basis": "conditional",
+          "notes": "At 150,000 miles replace if not replaced within the previous 100,000 miles. Inspect for wear between replacements."
+        },
+        {
+          "key": "at-fluid-28",
+          "item": "at-fluid",
+          "miles": 150000,
+          "months": null,
+          "page": 27,
+          "notes": "6R80: normal 150,000-mile service applies; the severe-use 30,000-mile ATF rule explicitly excludes 6R80."
+        },
+        {
+          "key": "transfer-29",
+          "item": "transfer",
+          "miles": 150000,
+          "months": null,
+          "page": 27,
+          "drivetrain": "4x4"
+        },
+        {
+          "key": "transfer-30",
+          "item": "transfer",
+          "miles": 60000,
+          "months": null,
+          "page": 41,
+          "conditions_any": [
+            "towing",
+            "dust",
+            "offroad"
+          ],
+          "drivetrain": "4x4",
+          "priority": 10
+        },
+        {
+          "key": "front-diff-31",
+          "item": "front-diff",
+          "miles": 150000,
+          "months": null,
+          "page": 27,
+          "drivetrain": "4x4"
+        },
+        {
+          "key": "rear-diff-32",
+          "item": "rear-diff",
+          "miles": null,
+          "months": null,
+          "page": 47,
+          "basis": "conditional",
+          "notes": "Ford-design light-truck axles with synthetic lubricant have no routine change interval. Service for leakage/repair or immersion; change lubricant after submersion. Verify axle/lubricant if modified."
+        },
+        {
+          "key": "multi-33",
+          "item": "multi",
+          "miles": 7500,
+          "months": null,
+          "page": 14,
+          "optional": true
+        },
+        {
+          "key": "lights-34",
+          "item": "lights",
+          "miles": null,
+          "months": 1,
+          "page": 8,
+          "basis": "service",
+          "optional": true
+        },
+        {
+          "key": "pressure-35",
+          "item": "pressure",
+          "miles": null,
+          "months": 1,
+          "page": 8,
+          "basis": "service",
+          "optional": true
+        },
+        {
+          "key": "oil-level-36",
+          "item": "oil-level",
+          "miles": null,
+          "months": 1,
+          "page": 8,
+          "basis": "service",
+          "optional": true
+        },
+        {
+          "key": "washer-37",
+          "item": "washer",
+          "miles": null,
+          "months": 1,
+          "page": 8,
+          "basis": "service",
+          "optional": true
+        },
+        {
+          "key": "belts-latches-38",
+          "item": "belts-latches",
+          "miles": null,
+          "months": 6,
+          "page": 8,
+          "basis": "service",
+          "optional": true
+        },
+        {
+          "key": "spare-39",
+          "item": "spare",
+          "miles": null,
+          "months": 6,
+          "page": 8,
+          "basis": "service",
+          "optional": true
+        },
+        {
+          "key": "power-steering-40",
+          "item": "power-steering",
+          "miles": null,
+          "months": 6,
+          "page": 8,
+          "basis": "service",
+          "optional": true
+        },
+        {
+          "key": "wipers-41",
+          "item": "wipers",
+          "miles": null,
+          "months": 6,
+          "page": 8,
+          "basis": "service",
+          "optional": true
+        },
+        {
+          "key": "locks-42",
+          "item": "locks",
+          "miles": null,
+          "months": 6,
+          "page": 8,
+          "basis": "service",
+          "optional": true
+        },
+        {
+          "key": "drains-43",
+          "item": "drains",
+          "miles": null,
+          "months": 6,
+          "page": 8,
+          "basis": "service",
+          "optional": true
+        },
+        {
+          "key": "warning-lights-44",
+          "item": "warning-lights",
+          "miles": null,
+          "months": 6,
+          "page": 8,
+          "basis": "service",
+          "optional": true
+        },
+        {
+          "key": "coolant-level-45",
+          "item": "coolant-level",
+          "miles": null,
+          "months": 6,
+          "page": 8,
+          "basis": "service",
+          "optional": true
+        },
+        {
+          "key": "battery-46",
+          "item": "battery",
+          "miles": null,
+          "months": 6,
+          "page": 8,
+          "basis": "service",
+          "optional": true
+        },
+        {
+          "key": "e85-47",
+          "item": "e85",
+          "miles": 3000,
+          "months": null,
+          "page": 45,
+          "conditions_any": [
+            "e85"
+          ],
+          "basis": "service",
+          "notes": "This gasoline-fill interval applies only when otherwise operating exclusively on E85."
+        }
+      ]
+    },
+    {
+      "key": "altima-2012",
+      "version": "2026.10.09.2",
+      "source": "nissan-2012",
+      "reviewed": true,
+      "reviewed_on": "2026-10-09",
+      "review_notes": "Schedules 1/2 only; Premium entries marked optional. PDF page = printed page + 2. CVT severe replacement uses the specific p.12 exception, not generic automatic-transmission footnotes.",
+      "rules": [
+        {
+          "key": "oil-0",
+          "item": "oil",
+          "miles": 7500,
+          "months": 6,
+          "page": 11,
+          "basis": "service"
+        },
+        {
+          "key": "oil-1",
+          "item": "oil",
+          "miles": 3750,
+          "months": 3,
+          "page": 11,
+          "basis": "service",
+          "conditions_any": [
+            "short",
+            "traffic",
+            "dust",
+            "rough",
+            "towing"
+          ],
+          "priority": 10
+        },
+        {
+          "key": "tires-2",
+          "item": "tires",
+          "miles": 7500,
+          "months": 6,
+          "page": 19
+        },
+        {
+          "key": "brakes-3",
+          "item": "brakes",
+          "miles": 15000,
+          "months": 12,
+          "page": 23
+        },
+        {
+          "key": "brakes-4",
+          "item": "brakes",
+          "miles": 7500,
+          "months": 6,
+          "page": 19,
+          "conditions_any": [
+            "short",
+            "traffic",
+            "dust",
+            "rough",
+            "towing"
+          ],
+          "priority": 10
+        },
+        {
+          "key": "boots-5",
+          "item": "boots",
+          "miles": 15000,
+          "months": 12,
+          "page": 23
+        },
+        {
+          "key": "boots-6",
+          "item": "boots",
+          "miles": 7500,
+          "months": 6,
+          "page": 19,
+          "conditions_any": [
+            "short",
+            "traffic",
+            "dust",
+            "rough",
+            "towing"
+          ],
+          "priority": 10
+        },
+        {
+          "key": "steering-7",
+          "item": "steering",
+          "miles": 30000,
+          "months": 24,
+          "page": 28
+        },
+        {
+          "key": "steering-8",
+          "item": "steering",
+          "miles": 7500,
+          "months": 6,
+          "page": 19,
+          "conditions_any": [
+            "short",
+            "traffic",
+            "dust",
+            "rough",
+            "towing"
+          ],
+          "priority": 10
+        },
+        {
+          "key": "exhaust-9",
+          "item": "exhaust",
+          "miles": 30000,
+          "months": 24,
+          "page": 28
+        },
+        {
+          "key": "exhaust-10",
+          "item": "exhaust",
+          "miles": 7500,
+          "months": 6,
+          "page": 19,
+          "conditions_any": [
+            "short",
+            "traffic",
+            "dust",
+            "rough",
+            "towing"
+          ],
+          "priority": 10
+        },
+        {
+          "key": "brake-lines-11",
+          "item": "brake-lines",
+          "miles": 15000,
+          "months": 12,
+          "page": 23
+        },
+        {
+          "key": "brake-fluid-12",
+          "item": "brake-fluid",
+          "miles": 30000,
+          "months": 24,
+          "page": 28
+        },
+        {
+          "key": "brake-fluid-13",
+          "item": "brake-fluid",
+          "miles": 15000,
+          "months": 12,
+          "page": 23,
+          "conditions_any": [
+            "short",
+            "traffic",
+            "dust",
+            "rough",
+            "towing"
+          ],
+          "priority": 10
+        },
+        {
+          "key": "cabin-14",
+          "item": "cabin",
+          "miles": 15000,
+          "months": 12,
+          "page": 23,
+          "notes": "Replace more frequently with prolonged dust exposure."
+        },
+        {
+          "key": "air-15",
+          "item": "air",
+          "miles": 30000,
+          "months": 24,
+          "page": 28
+        },
+        {
+          "key": "air-check-16",
+          "item": "air-check",
+          "miles": null,
+          "months": null,
+          "page": 12,
+          "basis": "conditional",
+          "conditions_any": [
+            "dust"
+          ],
+          "notes": "Check and replace more frequently in prolonged dusty driving."
+        },
+        {
+          "key": "fuel-lines-17",
+          "item": "fuel-lines",
+          "miles": 30000,
+          "months": 24,
+          "page": 28
+        },
+        {
+          "key": "evap-18",
+          "item": "evap",
+          "miles": 30000,
+          "months": 24,
+          "page": 28
+        },
+        {
+          "key": "belts-19",
+          "item": "belts",
+          "miles": 15000,
+          "months": 12,
+          "page": 38,
+          "first_miles": 60000,
+          "first_months": 48
+        },
+        {
+          "key": "plugs-20",
+          "item": "plugs",
+          "miles": 105000,
+          "months": 84,
+          "page": 51
+        },
+        {
+          "key": "coolant-21",
+          "item": "coolant",
+          "miles": 75000,
+          "months": 60,
+          "page": 12,
+          "basis": "service",
+          "first_miles": 105000,
+          "first_months": 84,
+          "notes": "Factory blue coolant: first 105,000 mi / 7 years; then 75,000 mi / 5 years. Other coolant mixtures can shorten this interval."
+        },
+        {
+          "key": "cvt-22",
+          "item": "cvt",
+          "miles": 15000,
+          "months": 12,
+          "page": 23,
+          "transmission": "CVT"
+        },
+        {
+          "key": "cvt-replace-23",
+          "item": "cvt-replace",
+          "miles": null,
+          "months": null,
+          "page": 14,
+          "basis": "conditional",
+          "transmission": "CVT",
+          "conditions_any": [
+            "towing",
+            "rough"
+          ],
+          "notes": "At 60,000 miles replace CVT fluid OR ask a dealer to check deterioration data; replace if over 210000. Do not apply generic 30k automatic-fluid rule to this CVT exception."
+        },
+        {
+          "key": "mt-fluid-24",
+          "item": "mt-fluid",
+          "miles": 15000,
+          "months": 12,
+          "page": 23,
+          "transmission": "6-speed manual (coupe)"
+        },
+        {
+          "key": "mt-replace-25",
+          "item": "mt-replace",
+          "miles": 30000,
+          "months": 24,
+          "page": 14,
+          "transmission": "6-speed manual (coupe)",
+          "conditions_any": [
+            "towing",
+            "rough"
+          ]
+        },
+        {
+          "key": "valves-26",
+          "item": "valves",
+          "miles": null,
+          "months": null,
+          "page": 13,
+          "basis": "conditional",
+          "optional": true,
+          "notes": "Inspect only when valve noise increases; adjust if needed."
+        },
+        {
+          "key": "belts-replace-27",
+          "item": "belts-replace",
+          "miles": 30000,
+          "months": 24,
+          "page": 28,
+          "optional": true,
+          "notes": "Optional Nissan Premium upgrade; not part of the required Schedule 1/2 work."
+        },
+        {
+          "key": "radiator-cap-28",
+          "item": "radiator-cap",
+          "miles": 30000,
+          "months": 24,
+          "page": 28,
+          "optional": true,
+          "notes": "Optional Nissan Premium upgrade; not part of the required Schedule 1/2 work."
+        },
+        {
+          "key": "wipers-replace-29",
+          "item": "wipers-replace",
+          "miles": 30000,
+          "months": 24,
+          "page": 28,
+          "optional": true,
+          "notes": "Optional Nissan Premium upgrade; not part of the required Schedule 1/2 work."
+        },
+        {
+          "key": "locks-30",
+          "item": "locks",
+          "miles": 30000,
+          "months": 24,
+          "page": 28,
+          "optional": true,
+          "notes": "Optional Nissan Premium upgrade; not part of the required Schedule 1/2 work."
+        }
+      ]
+    },
+    {
+      "key": "crosstrek-2021",
+      "version": "2026.10.09.2",
+      "source": "subaru-2021",
+      "reviewed": true,
+      "reviewed_on": "2026-10-09",
+      "review_notes": "US 2021 table p.28, condition-specific footnotes p.29. Limited 2.5L CVT; excludes STI timing belt, BRZ, hybrid and manual-only rows. Continue intervals per p.27.",
+      "rules": [
+        {
+          "key": "oil-0",
+          "item": "oil",
+          "miles": 6000,
+          "months": 6,
+          "page": 28,
+          "basis": "service"
+        },
+        {
+          "key": "oil-1",
+          "item": "oil",
+          "miles": 3000,
+          "months": 3,
+          "page": 29,
+          "basis": "service",
+          "conditions_any": [
+            "short",
+            "cold",
+            "towing"
+          ],
+          "priority": 10
+        },
+        {
+          "key": "tires-2",
+          "item": "tires",
+          "miles": 6000,
+          "months": 6,
+          "page": 28
+        },
+        {
+          "key": "plugs-3",
+          "item": "plugs",
+          "miles": 60000,
+          "months": 60,
+          "page": 28
+        },
+        {
+          "key": "belts-4",
+          "item": "belts",
+          "miles": 30000,
+          "months": 30,
+          "page": 28
+        },
+        {
+          "key": "fuel-lines-5",
+          "item": "fuel-lines",
+          "miles": 30000,
+          "months": 30,
+          "page": 28
+        },
+        {
+          "key": "air-6",
+          "item": "air",
+          "miles": 30000,
+          "months": 30,
+          "page": 28
+        },
+        {
+          "key": "cooling-7",
+          "item": "cooling",
+          "miles": 30000,
+          "months": 30,
+          "page": 28
+        },
+        {
+          "key": "cvt-8",
+          "item": "cvt",
+          "miles": 30000,
+          "months": 30,
+          "page": 28
+        },
+        {
+          "key": "diff-9",
+          "item": "diff",
+          "miles": 30000,
+          "months": 30,
+          "page": 28
+        },
+        {
+          "key": "brake-fluid-10",
+          "item": "brake-fluid",
+          "miles": 30000,
+          "months": 30,
+          "page": 28
+        },
+        {
+          "key": "fuel-filter-11",
+          "item": "fuel-filter",
+          "miles": 72000,
+          "months": 72,
+          "page": 28,
+          "notes": "More frequent replacement may be needed in extreme heat or cold; inspect contamination. Not required for emissions-warranty eligibility."
+        },
+        {
+          "key": "coolant-12",
+          "item": "coolant",
+          "miles": 75000,
+          "months": 72,
+          "page": 28,
+          "basis": "service",
+          "first_miles": 137500,
+          "first_months": 132,
+          "notes": "First 137,500 mi / 11 years; then 75,000 mi / 6 years. Follow note 10 on coolant conditioner."
+        },
+        {
+          "key": "brake-lines-13",
+          "item": "brake-lines",
+          "miles": 12000,
+          "months": 12,
+          "page": 28
+        },
+        {
+          "key": "brakes-14",
+          "item": "brakes",
+          "miles": 12000,
+          "months": 12,
+          "page": 28
+        },
+        {
+          "key": "boots-15",
+          "item": "boots",
+          "miles": 12000,
+          "months": 12,
+          "page": 28
+        },
+        {
+          "key": "steering-16",
+          "item": "steering",
+          "miles": 12000,
+          "months": 12,
+          "page": 28
+        },
+        {
+          "key": "wheel-bearing-17",
+          "item": "wheel-bearing",
+          "miles": 60000,
+          "months": 60,
+          "page": 28
+        },
+        {
+          "key": "cabin-18",
+          "item": "cabin",
+          "miles": 12000,
+          "months": 12,
+          "page": 28
+        },
+        {
+          "key": "air-check-19",
+          "item": "air-check",
+          "miles": null,
+          "months": null,
+          "page": 29,
+          "basis": "conditional",
+          "conditions_any": [
+            "dust"
+          ],
+          "notes": "Inspect the air cleaner more frequently under extreme dust; replace as required."
+        },
+        {
+          "key": "fuel-lines-20",
+          "item": "fuel-lines",
+          "miles": 6000,
+          "months": 6,
+          "page": 29,
+          "conditions_any": [
+            "salt",
+            "coastal"
+          ],
+          "priority": 10
+        },
+        {
+          "key": "brake-lines-21",
+          "item": "brake-lines",
+          "miles": 6000,
+          "months": 6,
+          "page": 29,
+          "conditions_any": [
+            "rough",
+            "salt",
+            "towing"
+          ],
+          "priority": 10
+        },
+        {
+          "key": "brakes-22",
+          "item": "brakes",
+          "miles": 6000,
+          "months": 6,
+          "page": 29,
+          "conditions_any": [
+            "cold",
+            "salt",
+            "towing"
+          ],
+          "priority": 10
+        },
+        {
+          "key": "boots-23",
+          "item": "boots",
+          "miles": 6000,
+          "months": 6,
+          "page": 29,
+          "conditions_any": [
+            "cold",
+            "salt",
+            "towing"
+          ],
+          "priority": 10
+        },
+        {
+          "key": "steering-24",
+          "item": "steering",
+          "miles": 6000,
+          "months": 6,
+          "page": 29,
+          "conditions_any": [
+            "cold",
+            "towing"
+          ],
+          "priority": 10
+        },
+        {
+          "key": "brake-fluid-25",
+          "item": "brake-fluid",
+          "miles": 15000,
+          "months": 15,
+          "page": 29,
+          "conditions_any": [
+            "humidity"
+          ],
+          "priority": 10
+        },
+        {
+          "key": "brake-fluid-check-26",
+          "item": "brake-fluid-check",
+          "miles": 6000,
+          "months": 6,
+          "page": 29,
+          "conditions_any": [
+            "rough",
+            "salt",
+            "towing"
+          ],
+          "notes": "Additional severe-use inspection from footnote 6. Does not replace the brake-fluid replacement interval."
+        },
+        {
+          "key": "diff-replace-27",
+          "item": "diff-replace",
+          "miles": 15000,
+          "months": 15,
+          "page": 29,
+          "conditions_any": [
+            "towing"
+          ]
+        },
+        {
+          "key": "cvt-replace-28",
+          "item": "cvt-replace",
+          "miles": 24855,
+          "months": null,
+          "page": 29,
+          "conditions_any": [
+            "towing"
+          ],
+          "basis": "service"
+        }
+      ]
+    }
+  ],
+  "configurations": [
+    {
+      "key": "ford-f150-2010-4x2",
+      "make": "Ford",
+      "model": "F-150",
+      "year": 2010,
+      "trim": "King Ranch",
+      "engine": "5.4L V8",
+      "transmission": "6R80 automatic",
+      "drivetrain": "4x2",
+      "schedule": "f150-2010",
+      "condition_options": {
+        "towing": "Frequent towing / camper / carrier",
+        "idling": "Extensive idling or low-speed commercial operation",
+        "dust": "Dusty roads",
+        "offroad": "Off-road operation",
+        "e85": "E85 fuel at least half the time",
+        "submerged": "Axle has been submerged"
+      },
+      "equipment_options": {
+        "cabin_filter": "Cabin filter actually fitted (not assumed)",
+        "seat_filter": "Climate-controlled seat filters fitted",
+        "at_dipstick": "Transmission has an underhood dipstick",
+        "grease_fittings": "Lubrication fittings fitted"
+      }
+    },
+    {
+      "key": "ford-f150-2010-4x4",
+      "make": "Ford",
+      "model": "F-150",
+      "year": 2010,
+      "trim": "King Ranch",
+      "engine": "5.4L V8",
+      "transmission": "6R80 automatic",
+      "drivetrain": "4x4",
+      "schedule": "f150-2010",
+      "condition_options": {
+        "towing": "Frequent towing / camper / carrier",
+        "idling": "Extensive idling or low-speed commercial operation",
+        "dust": "Dusty roads",
+        "offroad": "Off-road operation",
+        "e85": "E85 fuel at least half the time",
+        "submerged": "Axle has been submerged"
+      },
+      "equipment_options": {
+        "cabin_filter": "Cabin filter actually fitted (not assumed)",
+        "seat_filter": "Climate-controlled seat filters fitted",
+        "at_dipstick": "Transmission has an underhood dipstick",
+        "grease_fittings": "Lubrication fittings fitted"
+      }
+    },
+    {
+      "key": "nissan-altima-2012-cvt",
+      "make": "Nissan",
+      "model": "Altima",
+      "year": 2012,
+      "trim": "3.5 SR",
+      "engine": "3.5L V6",
+      "transmission": "CVT",
+      "drivetrain": "FWD",
+      "schedule": "altima-2012",
+      "condition_options": {
+        "short": "Repeated trips under 5 miles (10 in freezing weather)",
+        "traffic": "Hot stop-and-go traffic / extended low speeds",
+        "dust": "Dusty roads",
+        "rough": "Rough, muddy or salt-spread roads",
+        "towing": "Trailer, camper or car-top carrier"
+      },
+      "equipment_options": {}
+    },
+    {
+      "key": "nissan-altima-2012-manual-coupe",
+      "make": "Nissan",
+      "model": "Altima",
+      "year": 2012,
+      "trim": "3.5 SR",
+      "engine": "3.5L V6",
+      "transmission": "6-speed manual (coupe)",
+      "drivetrain": "FWD",
+      "schedule": "altima-2012",
+      "condition_options": {
+        "short": "Repeated trips under 5 miles (10 in freezing weather)",
+        "traffic": "Hot stop-and-go traffic / extended low speeds",
+        "dust": "Dusty roads",
+        "rough": "Rough, muddy or salt-spread roads",
+        "towing": "Trailer, camper or car-top carrier"
+      },
+      "equipment_options": {}
+    },
+    {
+      "key": "subaru-crosstrek-2021-limited",
+      "make": "Subaru",
+      "model": "Crosstrek",
+      "year": 2021,
+      "trim": "Limited",
+      "engine": "2.5L flat-four",
+      "transmission": "CVT",
+      "drivetrain": "AWD",
+      "schedule": "crosstrek-2021",
+      "condition_options": {
+        "short": "Repeated short trips",
+        "rough": "Rough or muddy roads",
+        "dust": "Extremely dusty driving",
+        "cold": "Extremely cold weather",
+        "salt": "Road salt / corrosive material exposure",
+        "coastal": "Coastal environment",
+        "towing": "Repeated trailer towing",
+        "humidity": "High humidity or mountainous areas",
+        "hot": "Extremely hot weather"
+      },
+      "equipment_options": {}
+    }
+  ]
+}

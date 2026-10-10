@@ -1,0 +1,16 @@
+[project]
+name = "vehicle-maintenance"
+version = "0.1.0"
+description = "A private, account-free maintenance garage with manufacturer schedules"
+requires-python = ">=3.13"
+dependencies = [
+  "Django>=5.2,<5.3", "gunicorn>=23,<24", "psycopg[binary]>=3.2,<4",
+  "whitenoise>=6.9,<7", "httpx>=0.28,<1", "python-dateutil>=2.9,<3",
+  "icalendar>=6,<7", "dj-database-url>=3,<4",
+]
+[dependency-groups]
+dev = ["pytest>=8,<10", "pytest-django>=4.11,<5", "pytest-cov>=6,<8", "playwright>=1.55,<2", "pymupdf>=1.26,<2"]
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["test_*.py"]
+testpaths = ["tests"]

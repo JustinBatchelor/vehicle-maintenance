@@ -1,0 +1,246 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: garage
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: garage-db
+spec:
+  clusterIP: None
+  selector: {app: garage-db}
+  ports:
+    - {name: postgres, port: 5432, targetPort: 5432}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: garage-db
+spec:
+  serviceName: garage-db
+  replicas: 1
+  selector:
+    matchLabels: {app: garage-db}
+  template:
+    metadata:
+      labels: {app: garage-db}
+    spec:
+      serviceAccountName: garage
+      securityContext: {runAsNonRoot: true, seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: postgres
+          image: {{ .Values.databaseImage | quote }}
+          securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
+          env:
+            - {name: POSTGRES_DB, value: garage}
+            - {name: POSTGRES_USER, value: garage}
+            - {name: PGDATA, value: /var/lib/postgresql/data/pgdata}
+            - name: POSTGRES_PASSWORD
+              valueFrom: {secretKeyRef: {name: {{ .Values.dbSecret }}, key: password}}
+          ports: [{containerPort: 5432}]
+          resources:
+            requests: {cpu: 100m, memory: 256Mi}
+            limits: {cpu: "1", memory: 1Gi}
+          readinessProbe:
+            exec: {command: [sh, -c, "pg_isready -U garage -d garage"]}
+            initialDelaySeconds: 10
+          livenessProbe:
+            exec: {command: [sh, -c, "pg_isready -U garage -d garage"]}
+            initialDelaySeconds: 60
+          volumeMounts:
+            - {name: data, mountPath: /var/lib/postgresql/data}
+  volumeClaimTemplates:
+    - metadata: {name: data}
+      spec:
+        accessModes: [ReadWriteOnce]
+        storageClassName: {{ .Values.storageClass }}
+        resources: {requests: {storage: {{ .Values.databaseSize }}}}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: garage-migrate-{{ .Release.Revision }}
+spec:
+  backoffLimit: 5
+  activeDeadlineSeconds: 600
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels: {app: garage-migrate}
+    spec:
+      serviceAccountName: garage
+      restartPolicy: OnFailure
+      securityContext: {runAsNonRoot: true, seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: migrate
+          image: {{ .Values.image | quote }}
+          command: [sh, -c, "python manage.py migrate --noinput && python manage.py import_schedules"]
+          envFrom: [{secretRef: {name: {{ .Values.appSecret }}}}]
+          securityContext: {readOnlyRootFilesystem: true, allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {cpu: "1", memory: 512Mi}
+          volumeMounts: [{name: tmp, mountPath: /tmp}]
+      volumes: [{name: tmp, emptyDir: {sizeLimit: 64Mi}}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: garage-web
+spec:
+  replicas: {{ .Values.replicas }}
+  minReadySeconds: 5
+  selector:
+    matchLabels: {app: garage-web}
+  template:
+    metadata:
+      labels: {app: garage-web}
+    spec:
+      serviceAccountName: garage
+      terminationGracePeriodSeconds: 45
+      securityContext: {runAsNonRoot: true, seccompProfile: {type: RuntimeDefault}}
+      initContainers:
+        - name: wait-for-release
+          image: {{ .Values.image | quote }}
+          command: [python, manage.py, wait_for_catalog]
+          envFrom: [{secretRef: {name: {{ .Values.appSecret }}}}]
+          securityContext: {readOnlyRootFilesystem: true, allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
+          resources:
+            requests: {cpu: 25m, memory: 64Mi}
+            limits: {cpu: 250m, memory: 256Mi}
+      containers:
+        - name: web
+          image: {{ .Values.image | quote }}
+          lifecycle:
+            preStop:
+              exec: {command: [sleep, "10"]}
+          envFrom: [{secretRef: {name: {{ .Values.appSecret }}}}]
+          env:
+            - {name: ALLOWED_HOSTS, value: {{ printf "%s,localhost,127.0.0.1" .Values.host | quote }}}
+            - {name: CSRF_TRUSTED_ORIGINS, value: {{ printf "https://%s" .Values.host | quote }}}
+            - {name: COOKIE_SECURE, value: "true"}
+            - {name: YOUTUBE_SEARCH_BUDGET, value: {{ .Values.youtubeSearchBudget | quote }}}
+          ports: [{name: http, containerPort: 8080}]
+          securityContext: {readOnlyRootFilesystem: true, allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
+          resources:
+            requests: {cpu: 100m, memory: 256Mi}
+            limits: {cpu: "1", memory: 512Mi}
+          readinessProbe:
+            httpGet: {path: /health/ready, port: http, httpHeaders: [{name: Host, value: localhost}]}
+            initialDelaySeconds: 5
+          livenessProbe:
+            httpGet: {path: /health/live, port: http, httpHeaders: [{name: Host, value: localhost}]}
+            initialDelaySeconds: 20
+          volumeMounts: [{name: tmp, mountPath: /tmp}]
+      volumes: [{name: tmp, emptyDir: {sizeLimit: 64Mi}}]
+---
+apiVersion: v1
+kind: Service
+metadata: {name: garage-web}
+spec:
+  selector: {app: garage-web}
+  ports: [{name: http, port: 8080, targetPort: http}]
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata: {name: garage}
+spec:
+  host: {{ .Values.host }}
+  to: {kind: Service, name: garage-web}
+  port: {targetPort: http}
+  tls: {termination: edge, insecureEdgeTerminationPolicy: Redirect}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: garage-db-internal}
+spec:
+  podSelector:
+    matchLabels: {app: garage-db}
+  policyTypes: [Ingress]
+  ingress:
+    - from: [{podSelector: {}}]
+      ports: [{protocol: TCP, port: 5432}]
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: garage-backups
+  annotations: {helm.sh/resource-policy: keep}
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: {{ .Values.storageClass }}
+  resources: {requests: {storage: {{ .Values.backupSize }}}}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata: {name: garage-backup}
+spec:
+  schedule: "0 3 * * *"
+  timeZone: America/New_York
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        metadata:
+          labels: {app: garage-backup}
+        spec:
+          serviceAccountName: garage
+          restartPolicy: OnFailure
+          securityContext: {runAsNonRoot: true, seccompProfile: {type: RuntimeDefault}}
+          containers:
+            - name: backup
+              image: {{ .Values.databaseImage | quote }}
+              command:
+                - /bin/bash
+                - -ec
+                - |
+                  umask 077
+                  target="/backups/garage-$(date -u +%Y%m%dT%H%M%SZ).dump"
+                  pg_dump -Fc --no-owner --no-acl -f "${target}.partial"
+                  pg_restore --list "${target}.partial" >/dev/null
+                  mv "${target}.partial" "$target"
+                  find /backups -name 'garage-*.dump' -mtime +13 -delete
+                  echo 'Backup completed and archive verified'
+              env:
+                - {name: PGHOST, value: garage-db}
+                - {name: PGDATABASE, value: garage}
+                - {name: PGUSER, value: garage}
+                - name: PGPASSWORD
+                  valueFrom: {secretKeyRef: {name: {{ .Values.dbSecret }}, key: password}}
+              securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
+              resources:
+                requests: {cpu: 50m, memory: 128Mi}
+                limits: {cpu: 500m, memory: 512Mi}
+              volumeMounts: [{name: backups, mountPath: /backups}]
+          volumes:
+            - name: backups
+              persistentVolumeClaim: {claimName: garage-backups}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata: {name: garage-cleanup}
+spec:
+  schedule: "20 3 * * *"
+  timeZone: America/New_York
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: garage
+          restartPolicy: OnFailure
+          securityContext: {runAsNonRoot: true, seccompProfile: {type: RuntimeDefault}}
+          containers:
+            - name: cleanup
+              image: {{ .Values.image | quote }}
+              command: [python, manage.py, cleanup]
+              envFrom: [{secretRef: {name: {{ .Values.appSecret }}}}]
+              securityContext: {readOnlyRootFilesystem: true, allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
+              resources:
+                requests: {cpu: 25m, memory: 64Mi}
+                limits: {cpu: 250m, memory: 256Mi}

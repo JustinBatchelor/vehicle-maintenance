@@ -1,0 +1,30 @@
+services:
+  db:
+    image: docker.io/library/postgres:17
+    environment:
+      POSTGRES_DB: garage
+      POSTGRES_USER: garage
+      POSTGRES_PASSWORD: development-only
+    volumes:
+      - garage-db:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U garage -d garage"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  web:
+    build:
+      context: .
+      dockerfile: Containerfile
+    environment:
+      DATABASE_URL: postgresql://garage:development-only@db:5432/garage
+      DJANGO_SECRET_KEY: local-development-only-not-for-deployment
+      ALLOWED_HOSTS: localhost,127.0.0.1
+      DEBUG: "true"
+    ports: ["8080:8080"]
+    depends_on:
+      db:
+        condition: service_healthy
+    command: [sh, -c, "python manage.py migrate --noinput && python manage.py import_schedules && exec gunicorn config.wsgi:application --bind 0.0.0.0:8080 --workers 2 --threads 4"]
+volumes:
+  garage-db:

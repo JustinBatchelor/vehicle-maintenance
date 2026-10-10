@@ -1,0 +1,6 @@
+apiVersion: v2
+name: garage
+description: Private vehicle maintenance garages on OpenShift
+version: 0.1.0
+appVersion: "0.1.0"
+type: application

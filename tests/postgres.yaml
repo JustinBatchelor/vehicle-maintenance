@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Namespace
+metadata: {name: vehicle-maintenance-test}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: test-postgres, namespace: vehicle-maintenance-test}
+spec:
+  selector: {app: test-postgres}
+  ports: [{port: 5432, targetPort: 5432}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: test-postgres, namespace: vehicle-maintenance-test}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: test-postgres}
+  template:
+    metadata:
+      labels: {app: test-postgres}
+    spec:
+      automountServiceAccountToken: false
+      securityContext: {runAsNonRoot: true, seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: postgres
+          image: docker.io/library/postgres@sha256:3cec7eb015ba8adb28139fa5c83b8489cdf0e666e53dfdf20f598ae0cc8739e3
+          env:
+            - {name: POSTGRES_USER, value: garage}
+            - {name: POSTGRES_DB, value: garage}
+            - {name: POSTGRES_PASSWORD, value: temporary-test-only}
+            - {name: PGDATA, value: /var/lib/postgresql/data/pgdata}
+          securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
+          resources:
+            requests: {cpu: 50m, memory: 128Mi}
+            limits: {cpu: 500m, memory: 512Mi}
+          readinessProbe:
+            exec: {command: [pg_isready, -U, garage]}
+          volumeMounts: [{name: data, mountPath: /var/lib/postgresql/data}]
+      volumes: [{name: data, emptyDir: {sizeLimit: 1Gi}}]
