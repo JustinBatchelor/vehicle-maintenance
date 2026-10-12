@@ -131,7 +131,8 @@ loopback addresses and adds no server-side login bypass. For live browser tests,
 supply `GARAGE_STORAGE_STATE` for a dedicated Google test account; protect that
 file as a credential and never commit it. Real Google login must be verified
 interactively; mocked OAuth tests do not establish production consent. External API behavior is covered with mocks;
-live video-card checks require an actual API key.
+live video-card checks require an actual API key. See [video relevance testing](docs/video-discovery.md)
+for the fixed benchmark, release gates, and isolated browser check.
 
 Dependency locks: `uv.lock` includes development tools; `requirements.lock`
 contains hashed runtime dependencies for the container. Refresh both together:
@@ -202,11 +203,15 @@ roll back an application release.
 Set `YOUTUBE_API_KEY` in the existing `google-oauth` Secret (selected by Helm
 value `googleOAuthSecret`), then restart the web Deployment after future key
 changes. The key reference is optional so installations without it retain search
-links. Expanding **How-to videos** loads up to three live API-discovered video
-cards, with shared caching; no OAuth permission from the user is needed. The key is never sent to
+links. Expanding **How-to videos** searches for up to three close vehicle-and-service
+matches, with shared caching; no OAuth permission from the user is needed. The key is never sent to
 the browser or logged. Public vehicle descriptors and task phrases are the only
-search data sent. No per-user YouTube authorization is needed. Results remain
-candidates, not verified mechanical instructions. Request cache: seven days for
+search data sent. No per-user YouTube authorization is needed. Titles and narrative
+descriptions must identify the service, action, model, year
+or stated year range, and relevant engine/transmission/drivetrain. Unrelated and
+insufficiently documented results are omitted; panels can contain fewer than three
+cards or no cards. Results remain candidates, not verified mechanical instructions.
+Request cache: seven days for
 results, one day for empty searches, five minutes for API errors; a daily cleanup
 removes metadata older than 30 days. Validate actual project quota before changing
 the cap. Existing schedules/records keep working during API outages.
@@ -255,8 +260,9 @@ See [the review record](data/REVIEW.md) and `data/schedules.json` for provenance
 configuration decisions and documented conditional cases. `python
 scripts/build_catalog.py` reproduces the reviewed dataset. Increment its version
 when changing intervals, test, then import atomically. New vehicle configurations
-automatically participate in tutorial searches once their reviewed schedule is
-imported; no hard-coded video list is required.
+need reviewed search vocabulary and configuration
+matching support as well as their schedule import. Unknown maintenance items keep
+the search link without automatically displaying unfiltered video cards.
 
 ## Operations
 

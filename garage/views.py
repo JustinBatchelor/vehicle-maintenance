@@ -232,7 +232,7 @@ def video_results(request,pk,item_id):
     if item_id not in ids and not car.appointments.filter(items__id=item_id).exists():raise Http404
     item=get_object_or_404(MaintenanceItem,pk=item_id)
     if not consume("video:"+str(request.garage.pk),30,60):
-        data={"videos":[],"search_url":"https://www.youtube.com/results?"+urlencode({"search_query":videos.queries(car,item)[0][0]}),"notice":"Please wait a minute before loading more video cards. You can still search YouTube."}
+        data={"videos":[],"outcome":"unavailable","search_url":videos.search_url(car,item),"notice":"Please wait a minute before loading more video cards. You can still search YouTube."}
     else:
         data=videos.discover(car,item)
     return render(request,"garage/videos.html",{**data,"item":item})

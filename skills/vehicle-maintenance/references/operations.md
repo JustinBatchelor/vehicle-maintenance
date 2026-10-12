@@ -40,6 +40,19 @@ Treat that file as a credential, never commit it or reuse another user's cookies
 Mocked OAuth callbacks do not verify a real consent screen or callback registration.
 Missing local Google credentials is not a reason to disable required production login.
 
+Video relevance checks have an additional local runner:
+
+```sh
+uv run python scripts/check_video_panels.py
+```
+
+It creates a temporary SQLite database and loopback server, uses ordinary Google-
+linked test sessions, and checks real HTMX loading/matched/empty/unavailable panels
+at desktop and mobile widths with synthetic provider responses. It never contacts
+Google/YouTube. Set `PLAYWRIGHT_BROWSERS_PATH` if browsers are installed elsewhere.
+For live relevance evaluation, follow `docs/video-discovery.md`; preserve the daily
+project cap and keep metadata artifacts outside the checkout.
+
 ## Deployment map
 
 Use `oc` with the existing kubeconfig. Confirm the active context/namespace

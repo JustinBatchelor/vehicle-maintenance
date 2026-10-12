@@ -43,7 +43,7 @@ preserve current behavior unless the user's request changes it.
 | Due calculations and applicability | `garage/calculator.py`, `garage/services.py`, `tests/test_calculator.py`, `tests/test_assumptions.py` |
 | Manufacturer coverage and provenance | `data/REVIEW.md`, `data/schedules.json`, `scripts/build_catalog.py`, `garage/management/commands/import_schedules.py` |
 | Google identity and legacy imports | `garage/accounts.py`, `config/urls.py`, `config/settings.py`, `tests/test_accounts.py` |
-| Video discovery, quotas and caching | `garage/videos.py`, `garage/limits.py`, `templates/garage/videos.html`, `tests/test_videos.py` |
+| Video discovery, quotas and caching | `garage/videos.py`, `garage/video_profiles.py`, `garage/limits.py`, `tests/test_videos.py`, `docs/video-discovery.md` |
 | Containers, Secrets, releases and backups | `Containerfile`, `charts/garage/`, `scripts/`, `README.md` |
 
 Read [domain rules](references/domain.md) for changes to schedules, history,

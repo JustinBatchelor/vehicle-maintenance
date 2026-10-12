@@ -97,21 +97,40 @@ later edits do not synchronize previously exported events.
 ## YouTube discovery
 
 Expansion loads an authenticated HTMX fragment; external calls do not block
-dashboard rendering. `queries()` uses public vehicle configuration and procedure
-search phrases, progressing from vehicle-specific to model to general. Keep
-inspection and replacement phrases distinct. Never send identity, VIN, mileage
-or private notes. Label broader results and state that applicability is unverified.
+page rendering. `garage/video_profiles.py` contains task phrases, component/action
+synonyms, conflicts and required mechanical dimensions, separately from schedules.
+`queries()` uses the public year/make/model and only procedure-relevant details.
+Unknown item profiles fail closed to a vehicle/task search link.
 
-`search.list` candidates are checked with `videos.list`: preserve ordering,
-deduplicate IDs, filter unavailable/private/live/region-blocked results, show at
-most three linked cards with attribution, and retain the YouTube search fallback.
-No embeds or user YouTube OAuth are used.
+At most two vehicle-context searches retrieve up to 15 candidates each. Keep
+inspection and replacement separate; reject wrong models, explicit configuration
+conflicts and missing critical details. Titles must identify the component;
+only short procedural narrative can add positive description evidence. Keyword
+lists alone cannot establish a match. A stated year/range must include the target;
+no neighboring-year compatibility is currently inferred or approved.
 
-Cache by query context, not owner. Results last seven days, empty results one
-day, failures five minutes; the database lease prevents simultaneous duplicate
-requests. Cleanup deletes metadata older than 30 days. Per-user throttling and
-the project search-request budget are separate; the daily budget uses Pacific
-time. Do not confuse the app's search count with Google's quota units. Changes
-to API requests or storage policy warrant checking current official documentation.
-API failures must preserve maintenance operations. HTTP client debug logging
-can disclose API-key query strings; retain the existing sanitized logging.
+`search.list` candidates are checked with batched `videos.list`. Preserve provider
+ordering among accepted candidates, deduplicate IDs and filter unavailable/private/
+live/region-blocked results. Display zero to three linked cards, labeled possible
+matches, with attribution and a search fallback. No embeds or user YouTube OAuth.
+Never send identity, VIN, mileage, nickname or private notes to the provider.
+
+Cache keys include search/profile versions and mechanical context, never owner.
+The existing JSON field stores an envelope with videos and outcome (matches,
+no_matches, unavailable). Empty and failure notices survive cache hits. Results
+last seven days, empty results one day, failures/partial failures five minutes.
+The atomic lease AND expiry check prevent duplicate requests. Cleanup deletes
+metadata older than 30 days. Per-user throttling and the shared project search cap
+are separate; daily counters use Pacific time. Never raise the cap to run tests.
+Failures preserve maintenance operations. Logs include outcome, candidate/card
+counts and elapsed time, never HTTP exception text, URLs or keys.
+
+`scripts/evaluate_videos.py` defines 20 development, 10 held-out and 10 targeted
+cases, reproduces the old search behavior, and applies the new matcher to fresh
+provider results. Live mode is explicit and quota-bounded. `--cluster` keeps the
+key inside the existing web pod and reserves searches through its existing shared
+limiter; it does not deploy code or write garage/service data. Evaluation artifacts
+must stay outside Git and expire after 29 days. Permanent fixtures are synthetic.
+Do not confuse mocked tests or metadata review with watching instructional content.
+A benchmark without independent human labels/availability checks cannot pass.
+See `docs/video-discovery.md` for commands, gates and the latest evaluation status.
