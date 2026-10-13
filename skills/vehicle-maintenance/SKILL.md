@@ -22,6 +22,9 @@ preserve current behavior unless the user's request changes it.
   HTMX; SQLite is for local convenience. No separate frontend build or public API.
 - Google is the only signup/login method. Account ownership persists across
   devices. No email/password registration, SMTP requirement, or email allowlist.
+- The default vehicle view is a mileage timeline; Detailed list retains the
+  existing filters. Single/batch completion confirms mileage once and uses
+  durable receipts to prevent duplicate records on retry.
 - New vehicles default to a disclosed maintenance assumption, separate from
   real service records. Upcoming shows required before optional work. Filters
   are temporary and start at All maintenance.
@@ -40,6 +43,7 @@ preserve current behavior unless the user's request changes it.
 | Page layout, mobile behavior, filters | `templates/`, `static/app.css`, `static/app.js` |
 | Vehicle setup, history, appointments, exports | `garage/forms.py`, `garage/views.py`, `garage/urls.py` |
 | Models, ownership, observations | `garage/models.py`, `garage/migrations/`, `garage/middleware.py` |
+| Timeline grouping and quick completion | `garage/services.py`, `garage/completions.py`, `tests/test_timeline.py`, `scripts/check_timeline.py` |
 | Due calculations and applicability | `garage/calculator.py`, `garage/services.py`, `tests/test_calculator.py`, `tests/test_assumptions.py` |
 | Manufacturer coverage and provenance | `data/REVIEW.md`, `data/schedules.json`, `scripts/build_catalog.py`, `garage/management/commands/import_schedules.py` |
 | Google identity and legacy imports | `garage/accounts.py`, `config/urls.py`, `config/settings.py`, `tests/test_accounts.py` |

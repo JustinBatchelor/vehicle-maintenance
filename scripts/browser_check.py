@@ -57,13 +57,14 @@ with sync_playwright() as p:
         expect(page.get_by_role('heading',name='Browser acceptance '+make,exact=True)).to_be_visible()
         assert page.locator('.task').count()>10
         expect(page.get_by_role('heading',name='Starting with maintenance up to date')).to_be_visible()
+        page.get_by_role('link',name='Detailed list',exact=True).click()
         page.locator('#status-filter').select_option('upcoming')
         assert page.locator('.task:visible').count()>0
         page.locator('#status-filter').select_option('all')
-        urls.append(page.url)
+        urls.append(page.url.split('?')[0])
     page.goto(base);expect(page.locator('.vehicle-card')).to_have_count(3)
     page.screenshot(path=str(out/'garage-desktop.png'),full_page=True)
-    page.goto(urls[0])
+    page.goto(urls[0]+'?view=list')
     oil=page.locator('.task').filter(has=page.get_by_role('heading',name='Engine oil and filter',exact=True))
     oil.get_by_text('How-to videos',exact=False).click()
     expect(oil.get_by_role('link',name='Search YouTube for this task')).to_be_visible()
@@ -71,6 +72,7 @@ with sync_playwright() as p:
     oil.get_by_role('link',name='Log service',exact=True).click()
     page.locator('#id_date').fill('2026-07-01');page.locator('#id_miles').fill('45000');page.locator('#id_cost').fill('49.95');page.locator('#id_notes').fill('Browser test only')
     page.get_by_role('button',name='Save',exact=True).click()
+    page.get_by_role('link',name='Detailed list',exact=True).click()
     oil=page.locator('.task').filter(has=page.get_by_role('heading',name='Engine oil and filter',exact=True))
     expect(oil.get_by_text('51000 miles',exact=False)).to_be_visible()
     oil.get_by_role('link',name='Plan',exact=True).click()
@@ -91,7 +93,7 @@ with sync_playwright() as p:
     expect(mobile.locator('.vehicle-card')).to_have_count(3)
     mobile.screenshot(path=str(out/'garage-mobile.png'),full_page=True)
     assert mobile.evaluate('document.documentElement.scrollWidth <= window.innerWidth')
-    mobile.goto(urls[0]);mobile.locator('#status-filter').select_option('upcoming')
+    mobile.goto(urls[0]+'?view=list');mobile.locator('#status-filter').select_option('upcoming')
     assert mobile.evaluate('document.documentElement.scrollWidth <= window.innerWidth')
     mobile.screenshot(path=str(out/'vehicle-mobile.png'),full_page=True)
     for url in urls:

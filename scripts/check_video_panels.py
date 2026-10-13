@@ -80,7 +80,7 @@ def main():
                         state['outcome'] = outcome
                         entered.clear()
                         release.clear()
-                        page.goto(base+f'/vehicles/{car.pk}/')
+                        page.goto(base+f'/vehicles/{car.pk}/?view=list')
                         task = page.locator('.task').filter(has=page.get_by_role('heading', name='Engine oil and filter', exact=True))
                         task.get_by_text('How-to videos', exact=False).click()
                         assert entered.wait(timeout=10)

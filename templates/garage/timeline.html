@@ -1,0 +1,29 @@
+<div class="section-heading"><h2>Maintenance timeline</h2></div>
+<p class="muted small">Each service appears at its next mileage target. Date and engine-hour limits still apply, whichever comes first. Based on {{ vehicle.configuration.schedule.source.title }}. {% if vehicle.conditions %}Your selected operating conditions are applied.{% else %}Normal operating conditions.{% endif %} Due soon means within 30 days or 500 miles.</p>
+{% if timeline.attention %}
+<aside class="panel timeline-attention" aria-labelledby="attention-heading">
+  <h3 id="attention-heading">Needs attention · {{ timeline.attention|length }}</h3>
+  <p class="small">Due or approaching a service limit. Services stay in mileage order below.</p>
+  <ul>{% for row in timeline.attention %}<li><a href="#service-{{ row.item.pk }}">{{ row.item.name }}</a> · {{ row.due.label }}{% if row.rule.optional %} · Optional{% endif %}{% if row.due.date %} · {{ row.due.date|date:'M j, Y' }}{% endif %}</li>{% endfor %}</ul>
+</aside>
+{% endif %}
+<form id="completion-selection" method="get" action="{% url 'service-complete' vehicle.pk %}"
+      hx-get="{% url 'service-complete' vehicle.pk %}" hx-target="#completion-panel" hx-swap="outerHTML" class="completion-toolbar">
+  <button class="button primary" type="submit">Complete selected</button>
+  <span class="small muted" id="selection-count" aria-live="polite">Select the services you completed.</span>
+</form>
+<div id="completion-panel"></div>
+<ol class="maintenance-timeline" aria-label="Mileage milestones">
+{% for milestone in timeline.milestones %}
+  <li class="timeline-milestone{% if milestone.current %} current-mileage{% endif %}" data-miles="{{ milestone.miles }}">
+    <h3>{{ milestone.miles }} miles{% if milestone.current %} · Current mileage{% endif %}</h3>
+    {% if milestone.current %}<p class="muted small">Recorded {{ reading.date|date:'M j, Y' }} · <a href="{% url 'reading-add' vehicle.pk %}">Update mileage</a></p>{% endif %}
+    {% for row in milestone.rows %}{% include 'garage/timeline_item.html' %}{% endfor %}
+  </li>
+{% endfor %}
+</ol>
+{% for section in timeline.sections %}
+<section class="timeline-section"><h2>{{ section.title }}</h2>
+{% for row in section.rows %}{% include 'garage/timeline_item.html' %}{% endfor %}
+</section>
+{% endfor %}

@@ -1,0 +1,19 @@
+<article id="service-{{ row.item.pk }}" class="task timeline-item" data-status="{{ row.due.status }}" data-optional="{{ row.rule.optional|yesno:'true,false' }}">
+  <div class="task-heading">
+    <div><h3>{{ row.item.name }}</h3><p class="muted small">{{ row.item.get_action_display }}{% if row.rule.optional %} · Optional recommendation{% endif %}</p></div>
+    <span class="status {{ row.due.status }}">{{ row.due.label }}</span>
+  </div>
+  <div class="timeline-limits">
+    {% if row.due.miles != None %}<p>{{ row.due.miles }} miles · {{ row.due.remaining_miles }} miles remaining</p>{% endif %}
+    {% if row.due.date %}<p {% if row.due.remaining_days <= 30 %}class="date-warning"{% endif %}>By {{ row.due.date|date:'M j, Y' }} · {% if row.due.remaining_days < 0 %}Overdue by date{% elif row.due.remaining_days == 0 %}Due today{% else %}{{ row.due.remaining_days }} days remaining{% endif %}</p>{% endif %}
+    {% if row.due.remaining_hours != None %}<p>{{ row.due.remaining_hours }} engine hours remaining</p>{% endif %}
+    {% if row.rule.miles and row.rule.months or row.rule.hours %}<p class="muted small">Whichever comes first</p>{% endif %}
+    {% if row.due.reason %}<p class="muted small">{{ row.due.reason }}</p>{% endif %}
+  </div>
+  <div class="task-bottom">
+    <label class="service-selection"><input type="checkbox" name="items" value="{{ row.item.pk }}" form="completion-selection">Select {{ row.item.name }}</label>
+    <a class="button secondary" href="{% url 'service-complete' vehicle.pk %}?items={{ row.item.pk }}"
+       hx-get="{% url 'service-complete' vehicle.pk %}?items={{ row.item.pk }}" hx-target="#completion-panel" hx-swap="outerHTML">Complete</a>
+  </div>
+  <details class="service-details"><summary>Service details, history &amp; tutorials</summary>{% include 'garage/task_details.html' %}</details>
+</article>

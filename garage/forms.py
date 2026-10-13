@@ -101,6 +101,26 @@ class RecordForm(StyledForm):
         if "date" in data and "miles" in data: validate_timeline(self.vehicle,data["date"],data["miles"],exclude_record=self.instance.pk)
         return data
 
+class CompletionForm(forms.Form):
+    items = forms.ModelMultipleChoiceField(queryset=MaintenanceItem.objects.none(), widget=forms.MultipleHiddenInput)
+    miles = forms.IntegerField(min_value=0, max_value=3000000, label="Odometer at service (miles)")
+    date = forms.DateField(initial=timezone.localdate, widget=forms.DateInput(attrs={"type": "date"}), label="Service date")
+    engine_hours = forms.IntegerField(min_value=0, max_value=2147483647, required=False, label="Engine hours at service (optional)")
+    token = forms.UUIDField(widget=forms.HiddenInput)
+
+    def __init__(self, *args, vehicle, **kwargs):
+        super().__init__(*args, **kwargs)
+        rules = applicable_rules(vehicle)
+        self.fields["items"].queryset = MaintenanceItem.objects.filter(pk__in=[r.item_id for r in rules]).order_by("name")
+        values = self.data if self.is_bound else self.initial
+        selected_ids = values.getlist("items") if hasattr(values, "getlist") else values.get("items", [])
+        selected_ids = {str(value) for value in selected_ids}
+        if not any(r.hours and str(r.item_id) in selected_ids for r in rules):
+            self.fields.pop("engine_hours")
+        # Timeline validation happens under the completion transaction, after
+        # checking the receipt. A retry must survive later history edits.
+
+
 class AppointmentForm(StyledForm):
     class Meta:
         model = Appointment

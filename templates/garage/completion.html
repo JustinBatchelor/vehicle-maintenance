@@ -1,0 +1,5 @@
+{% extends 'base.html' %}
+{% block content %}
+<a class="back" href="{% url 'vehicle-detail' vehicle.pk %}">← {{ vehicle }}</a>
+<div class="narrow">{% include 'garage/completion_panel.html' %}</div>
+{% endblock %}

@@ -104,9 +104,18 @@ class OdometerReading(models.Model):
     class Meta:
         ordering = ["-date", "-id"]
 
+class CompletionSubmission(models.Model):
+    """Durable receipt: replaying a submission never recreates edited/deleted work."""
+    token = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name="completions")
+    payload = models.JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
 class ServiceRecord(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name="records")
+    completion = models.ForeignKey(CompletionSubmission, null=True, blank=True, on_delete=models.SET_NULL, related_name="records")
     item = models.ForeignKey(MaintenanceItem, on_delete=models.PROTECT)
     date = models.DateField(default=timezone.localdate)
     miles = models.PositiveIntegerField()

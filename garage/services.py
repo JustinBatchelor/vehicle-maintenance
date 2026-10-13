@@ -33,3 +33,39 @@ def recommendations(vehicle):
         rows.append({"rule": rule, "item": rule.item, "due": due, "last": max(history, key=lambda s: (s.date,s.miles)) if history else None})
     order = {"overdue": 0, "due": 1, "due-soon": 2, "unknown": 3, "upcoming": 4, "as-needed": 5}
     return sorted(rows, key=lambda r: (order[r["due"].status], r["item"].name))
+
+
+def maintenance_timeline(rows, reading):
+    """Group existing decisions without projecting dates or altering due logic."""
+    milestones = {}
+    sections = {"scheduled": [], "unknown": [], "conditional": []}
+    attention = []
+    for row in rows:
+        due = row["due"]
+        if due.status in {"overdue", "due", "due-soon"} or (due.remaining_days is not None and due.remaining_days <= 30):
+            attention.append(row)
+        if due.miles is not None:
+            milestones.setdefault(due.miles, []).append(row)
+        elif due.status == "as-needed":
+            sections["conditional"].append(row)
+        elif due.date is not None or due.remaining_hours is not None:
+            sections["scheduled"].append(row)
+        else:
+            sections["unknown"].append(row)
+    if reading is not None:
+        milestones.setdefault(reading.miles, [])
+    order = lambda row: (row["rule"].optional, row["item"].name)
+    return {
+        "milestones": [
+            {"miles": miles, "current": reading is not None and miles == reading.miles,
+             "rows": sorted(group, key=order)}
+            for miles, group in sorted(milestones.items())
+        ],
+        "sections": [
+            {"title": title, "rows": sorted(sections[key], key=order)}
+            for key, title in [("scheduled", "Date / engine-hour maintenance"),
+                               ("unknown", "Unknown history"), ("conditional", "As needed")]
+            if sections[key]
+        ],
+        "attention": attention,
+    }

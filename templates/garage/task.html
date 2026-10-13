@@ -1,0 +1,2 @@
+<article class="task" data-status="{{ row.due.status }}" data-optional="{{ row.rule.optional|yesno:'true,false' }}"><div class="task-heading"><span class="task-symbol">{% if row.item.action == 'replace' %}↻{% elif row.item.action == 'inspect' %}◎{% else %}✓{% endif %}</span><div><h3>{{ row.item.name }}</h3><p class="muted small">{{ row.item.get_action_display }}{% if row.rule.optional %} · Optional recommendation{% endif %}</p></div><span class="status {{ row.due.status }}">{{ row.due.label }}</span></div>
+{% include 'garage/task_details.html' %}</article>

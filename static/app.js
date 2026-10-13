@@ -1,4 +1,34 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const selection = document.getElementById('completion-selection');
+  if (selection) {
+    const checkboxes = [...document.querySelectorAll('input[form="completion-selection"]')];
+    const updateSelection = () => {
+      const count = checkboxes.filter(input => input.checked).length;
+      selection.querySelector('button').disabled = count === 0;
+      document.getElementById('selection-count').textContent = count ? `${count} service${count === 1 ? '' : 's'} selected` : 'Select the services you completed.';
+    };
+    checkboxes.forEach(input => input.addEventListener('change', updateSelection));
+    updateSelection();
+  }
+  document.addEventListener('htmx:afterSwap', event => {
+    if (event.detail.target.id === 'completion-panel') {
+      document.getElementById('completion-heading')?.focus();
+    }
+  });
+  document.addEventListener('input', event => {
+    if (event.target.matches('#completion-panel input[name="date"]')) {
+      document.querySelector('[data-completion-date]').textContent = event.target.value || 'Choose a date';
+    }
+  });
+  document.addEventListener('click', event => {
+    if (selection && event.target.closest('[data-cancel-completion]')) {
+      event.preventDefault();
+      const panel = document.getElementById('completion-panel');
+      panel.replaceWith(Object.assign(document.createElement('div'), {id: 'completion-panel'}));
+      const button = selection.querySelector('button');
+      (button.disabled ? document.querySelector('.maintenance-views a[aria-current]') : button).focus();
+    }
+  });
   document.querySelectorAll('.videos-details').forEach(details => {
     details.addEventListener('toggle', () => { if (details.open && window.htmx) htmx.trigger(details.querySelector('.video-loader'), 'tutorials'); });
   });

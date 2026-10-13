@@ -35,7 +35,13 @@ Actual service history takes precedence per item, even when backdated.
 clears those overrides. Mileage updates and ordinary edits do not advance the
 baseline. Disabling it clears it; re-enabling uses the latest observation.
 
-The server orders recommendations by status, then name. `static/app.js` makes
+The default timeline groups each next mileage target exactly, retains mileage
+order even when calendar-overdue, and inserts the current observation marker.
+Non-mileage targets, unknown history, and as-needed work have separate sections.
+Required work precedes optional work within each milestone. An attention summary
+links to approaching and overdue limits without changing timeline order.
+
+In the Detailed list view, the server orders recommendations by status, then name. `static/app.js` makes
 Upcoming include both `due-soon` and `upcoming`, orders required before optional,
 and preserves the server order within each group. Other filters restore the
 original order. Do not persist filters across pages/devices.
@@ -89,6 +95,13 @@ not an automatic consequence of signup or a feature-testing workaround.
 Appointments contain one or more maintenance items but never satisfy a service
 requirement. Completed records contain actual date, mileage, optional hours,
 cost, provider and notes; preserve editing, deletion and backdating validation.
+Quick completion saves one ordinary record per selected item atomically, with
+confirmed mileage and a garage-local service date. It creates no extra odometer
+reading. `CompletionSubmission` receipts retain the normalized request even if
+the linked records are edited/deleted. Same-token retries never recreate work;
+changed payloads are rejected. Vehicle row locks serialize batch submissions;
+concurrency tests must run against PostgreSQL.
+
 CSV exports escape spreadsheet formulas and contain actual history, not setup
 assumptions. ICS events are all-day, have an exclusive end date and stable UID,
 and exclude private costs/notes. Calendar links require the user to save in Google;

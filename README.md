@@ -12,6 +12,8 @@ and 2021 Subaru Crosstrek Limited, including relevant configuration differences.
 
 - Manufacturer schedules, required-first Upcoming filtering, first/subsequent
   intervals, driving conditions, and explicit setup assumptions.
+- A default mileage timeline with exact service targets, calendar warnings, and
+  single/batch completion after one mileage confirmation.
 - Multiple vehicles, mileage history, completed service, appointments, CSV
   history, and ICS calendar downloads.
 - Google-only signup/login with verified identity, server-side sessions, and
@@ -86,6 +88,29 @@ the latest observation. The Upcoming filter includes due-soon work as well as
 more distant maintenance, with required items first and optional recommendations
 afterward. Within each group, due-soon items precede more distant work.
 
+## Maintenance timeline and quick completion
+
+Vehicle pages open on **Timeline**. Each applicable service appears once at its
+next exact mileage target, with required services before optional recommendations
+at the same milestone. The current-mileage marker includes the observation date.
+Calendar-overdue services stay at their mileage target with a date warning;
+**Needs attention** links to approaching or overdue limits. Date/hour-only,
+unknown-history, and as-needed work appear in separate sections. **Detailed list**
+retains the existing filters. No driving rate or later recurring visits are projected.
+
+Tap **Complete** or select several items and choose **Complete selected**. Confirm
+or update the prefilled mileage, then save once. The service date defaults to today
+in the garage timezone; **More options** allows backdating. Engine hours are optional
+when relevant and are not guessed. Each selected item becomes an ordinary service
+record; costs, provider and notes stay empty until edited in Service history.
+The saved records update mileage and service targets without a duplicate odometer
+reading. Setup assumptions stay fixed, and appointments are not marked complete.
+
+A transaction saves the whole batch or nothing. Durable submission receipts make
+retries safe, including after records are edited or deleted. Reusing a receipt with
+changed values is rejected; start a new completion instead. This release includes
+an additive database migration for receipts and their service-record links.
+
 ## Local development
 
 Agents making changes can use the repository's
@@ -118,6 +143,7 @@ uv run pytest -q
 uv run python manage.py makemigrations --check --dry-run
 uv run python manage.py check
 uv run playwright install chromium
+uv run python scripts/check_timeline.py
 GARAGE_LOCAL_TEST_ACCOUNT=1 GARAGE_URL=http://127.0.0.1:8000 uv run python scripts/browser_check.py
 helm lint charts/garage
 ```
@@ -277,6 +303,13 @@ protected against spreadsheet formula injection. HTMX is vendored with its licen
 ## Release verification
 
 Verified on OpenShift 4.22.4 with PostgreSQL 17:
+
+- Timeline release (Helm revision 9): 152 local tests and all three PostgreSQL
+  concurrency checks passed. Browser checks covered desktop/mobile timeline,
+  batch completion, keyboard interaction, validation recovery, no-JavaScript
+  saving, and the existing three-vehicle workflows. The pre-release backup was
+  verified, migration `0004_completion_submission` completed, and deployed
+  timeline/completion/CSV checks passed using a fully rolled-back test fixture.
 
 - Automated coverage includes Google OAuth callbacks with mocked provider
   responses, verified identity, ownership, legacy claims, imports, disabled

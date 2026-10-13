@@ -1,0 +1,23 @@
+<section id="completion-panel" class="panel completion-panel" aria-labelledby="completion-heading">
+  <h2 id="completion-heading" tabindex="-1">Confirm completed service</h2>
+  {% if selection_error %}<p class="errorlist" role="alert">{{ selection_error }}</p>{% endif %}
+  <ul>{% for item in selected %}<li>{{ item.name }} · {{ item.get_action_display }}</li>{% endfor %}</ul>
+  <form method="post" action="{% url 'service-complete' vehicle.pk %}"
+        hx-post="{% url 'service-complete' vehicle.pk %}" hx-target="#completion-panel" hx-swap="outerHTML" hx-disabled-elt="find button[type='submit']">
+    {% csrf_token %}{{ form.items }}{{ form.token }}
+    <div role="alert">{{ form.non_field_errors }}{{ form.items.errors }}{{ form.token.errors }}</div>
+    <p class="muted small">{% if reading %}Last observed: {{ reading.miles }} miles on {{ reading.date|date:'M j, Y' }}. Confirm or update the odometer at service.{% else %}Enter the actual odometer at service.{% endif %}</p>
+    {{ form.miles.errors }}{{ form.miles.label_tag }}{{ form.miles }}
+    <p class="small">Service date: <span data-completion-date>{{ form.date.value }}</span>. Only save work that has been completed.</p>
+    {% if form.engine_hours %}{{ form.engine_hours.errors }}{{ form.engine_hours.label_tag }}{{ form.engine_hours }}<p class="helptext">Leave blank if unknown; engine-hour limits will remain uncertain.</p>{% endif %}
+    <details {% if form.errors %}open{% endif %}>
+      <summary>More options</summary>
+      {{ form.date.errors }}{{ form.date.label_tag }}{{ form.date }}
+      <p class="helptext">Cost, provider, and notes can be added later in Service history.</p>
+    </details>
+    <div class="actions">
+      {% if selected %}<button type="submit" class="button primary">Save completed service</button>{% endif %}
+      <a href="{% url 'vehicle-detail' vehicle.pk %}" data-cancel-completion>Cancel</a>
+    </div>
+  </form>
+</section>

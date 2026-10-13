@@ -1,6 +1,7 @@
 import csv
 import hashlib
 import secrets
+import uuid
 from datetime import timedelta
 from functools import wraps
 from urllib.parse import urlencode
@@ -8,17 +9,19 @@ from django.contrib import messages
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from . import accounts
-from django.db import connection, transaction
+from django.core.exceptions import ValidationError
+from django.db import connection, transaction, IntegrityError
 from django.http import HttpResponse, JsonResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_http_methods
 from django.views.decorators.cache import never_cache
 from icalendar import Calendar, Event
-from .models import Garage, Vehicle, VehicleConfiguration, OdometerReading, ServiceRecord, Appointment, MaintenanceItem
-from .forms import VehicleForm, ReadingForm, RecordForm, AppointmentForm, GarageForm
-from .services import recommendations, applicable_rules
+from .models import Garage, Vehicle, VehicleConfiguration, OdometerReading, ServiceRecord, Appointment, MaintenanceItem, CompletionSubmission
+from .forms import VehicleForm, ReadingForm, RecordForm, AppointmentForm, GarageForm, CompletionForm
+from .services import recommendations, applicable_rules, maintenance_timeline
+from .completions import complete_services
 from .limits import consume, client_key
 from . import videos
 
@@ -124,7 +127,49 @@ def vehicle_form(request,pk=None):
 def vehicle_detail(request,pk):
     car=owned_vehicle(request,pk)
     rows=recommendations(car)
-    return render(request,"garage/vehicle.html",{"vehicle":car,"reading":car.latest_reading,"rows":rows,"records":car.records.select_related("item"),"appointments":car.appointments.prefetch_related("items")})
+    reading=car.latest_reading
+    return render(request,"garage/vehicle.html",{"vehicle":car,"reading":reading,"rows":rows,
+        "maintenance_view": "list" if request.GET.get("view") == "list" else "timeline",
+        "timeline": maintenance_timeline(rows, reading),
+        "records":car.records.select_related("item"),"appointments":car.appointments.prefetch_related("items")})
+
+
+@private
+@require_http_methods(["GET", "POST"])
+def complete_service(request, pk):
+    car = owned_vehicle(request, pk)
+    reading = car.latest_reading
+    initial = {"items": request.GET.getlist("items"), "miles": reading.miles if reading else None,
+               "date": timezone.localdate(), "token": uuid.uuid4()}
+    form = CompletionForm(request.POST if request.method == "POST" else None, vehicle=car, initial=initial)
+    selection_error = None
+    try:
+        selected = form.fields["items"].clean((request.POST if request.method == "POST" else request.GET).getlist("items"))
+    except ValidationError:
+        selected = []
+        selection_error = "Select at least one applicable service from the vehicle page."
+    if request.method == "POST" and form.is_valid():
+        try:
+            receipt, created = complete_services(car, form.cleaned_data)
+        except ValidationError as error:
+            form.add_error(None, error)
+        except IntegrityError:
+            # A conflicting token on another vehicle can race its unique insert.
+            # Other database failures must surface rather than masquerade as input errors.
+            if not CompletionSubmission.objects.filter(token=form.cleaned_data["token"]).exists():
+                raise
+            form.add_error(None, "This submission token is already in use. Start a new completion from the vehicle page.")
+        else:
+            count = len(receipt.payload["items"])
+            messages.success(request, f"{count} service{'s' if count != 1 else ''} recorded. Due dates have been recalculated."
+                             if created else "This completion was already saved. No duplicate records were added.")
+            url = reverse("vehicle-detail", args=[car.pk])
+            if request.headers.get("HX-Request") == "true":
+                return HttpResponse(headers={"HX-Redirect": url})
+            return redirect(url)
+    template = "garage/completion_panel.html" if request.headers.get("HX-Request") == "true" else "garage/completion.html"
+    return render(request, template, {"vehicle": car, "reading": reading, "form": form,
+                  "selected": selected, "selection_error": selection_error})
 
 @private
 def vehicle_delete(request,pk):

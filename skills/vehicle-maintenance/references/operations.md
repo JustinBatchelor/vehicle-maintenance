@@ -40,6 +40,15 @@ Treat that file as a credential, never commit it or reuse another user's cookies
 Mocked OAuth callbacks do not verify a real consent screen or callback registration.
 Missing local Google credentials is not a reason to disable required production login.
 
+Timeline interactions have a temporary-database browser runner:
+
+```sh
+uv run python scripts/check_timeline.py
+```
+
+It covers desktop/mobile, keyboard selection, validation, batch and individual
+confirmation, history/mileage refresh, and the non-JavaScript fallback.
+
 Video relevance checks have an additional local runner:
 
 ```sh
