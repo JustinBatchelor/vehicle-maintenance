@@ -92,11 +92,15 @@ afterward. Within each group, due-soon items precede more distant work.
 
 ## Updating current mileage
 
-Every vehicle page has a **Current odometer (miles)** field and **Save mileage**
-button in both Timeline and Detailed list. It starts with the latest recorded
-mileage, including completed service. Saving records today's date in your
-garage's timezone and refreshes the same maintenance view, its attention counts,
-remaining mileage, and timeline marker. Dashboard counts refresh on your next visit.
+Every vehicle card on the garage summary has a **Current odometer (miles)**
+field and **Save mileage** button. Edit and save one car at a time; saving
+refreshes the summary totals and returns to that card. Errors appear beside
+the affected field. The same editor is available on each vehicle page in both
+Timeline and Detailed list. Each editor starts with the latest recorded
+mileage, including completed service, and saves today's date in your garage's
+timezone. Saving on a vehicle page refreshes that maintenance view, its attention
+counts, remaining mileage, and timeline marker; garage totals reflect the update
+on your next visit to the summary.
 
 Mileage updates do not log completed service, advance the setup assumption,
 or move missed deadlines forward. Duplicate same-day submissions do not add
@@ -118,7 +122,8 @@ uv run python scripts/check_ascent_mileage.py
 ```
 
 This covers Ascent selection, current mileage updates, validation, both views,
-mobile/keyboard/no-JavaScript use, vehicle isolation, and video search fallback.
+mobile/keyboard/no-JavaScript use, independent garage-card saves, vehicle
+isolation, and video search fallback.
 
 ## Maintenance timeline and quick completion
 
@@ -333,6 +338,22 @@ No browser analytics are installed. User content is escaped and CSV cells are
 protected against spreadsheet formula injection. HTMX is vendored with its license.
 
 ## Release verification
+
+- Garage summary mileage release, October 25, 2026 (Helm revision 11):
+  204 local tests passed (five PostgreSQL-only tests skipped locally), and both
+  mileage concurrency checks passed against disposable PostgreSQL. The Ascent/
+  mileage and timeline browser runners passed, including independent card saves,
+  desktop/mobile layouts, keyboard entry, errors, duplicates, and no-JavaScript
+  use. Django checks, no-pending-model-change check, Helm lint, and server dry run
+  passed. The temporary PostgreSQL namespace and port-forward were removed.
+- Backup `garage-backup-dashboard-202610251854` completed and verified its
+  archive. Build `garage-14` produced image
+  `sha256:68afea85ec8ab04ecb027a64408df957ee8d1dd0dd3940572128144372751131`.
+  `garage-migrate-11` completed with no schema changes; the web rollout and HTTPS
+  readiness passed. The deployed image passed a dashboard save/recalculation,
+  validation, duplicate, and vehicle-isolation smoke test using temporary SQLite.
+  Production vehicle records were untouched. Revision 10 and its pinned image
+  remain available for a schema-compatible rollback.
 
 - Ascent and inline mileage release, October 25, 2026 (Helm revision 10):
   186 tests passed locally; five PostgreSQL-only tests were skipped there.

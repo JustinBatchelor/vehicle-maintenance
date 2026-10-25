@@ -129,13 +129,62 @@ def main():
                 db.submit(assert_saved, 'Ascent browser 390', 6002, 4).result()
                 db.submit(assert_saved, 'Ascent browser 1440', 6001, 3).result()
                 page.screenshot(path=str(out/'390-no-js.png'))
+                context.close()
+
+                # Each garage card saves independently, including with JavaScript disabled.
+                for width in [1440, 390]:
+                    context = browser.new_context(viewport={'width': width, 'height': 1000})
+                    context.add_cookies([cookie])
+                    page = context.new_page()
+                    page.on('pageerror', lambda error: errors.append(str(error)))
+                    page.goto(base+'/')
+                    card = page.get_by_role('article', name=f'Ascent browser {width}', exact=True)
+                    expect(page.locator('.vehicle-card')).to_have_count(2)
+                    ids = page.locator('[id]').evaluate_all('(elements) => elements.map(e => e.id)')
+                    assert len(ids) == len(set(ids)), ids
+                    field = card.get_by_label('Current odometer (miles)')
+                    expect(field).to_have_value('6001' if width == 1440 else '6002')
+                    expect(page.locator('.stats')).to_contain_text('Overdue')
+                    field.fill('6500')
+                    field.press('Enter')
+                    expect(page).to_have_url(re.compile(re.escape(base)+r'/#vehicle-'))
+                    expect(card.locator('.card-mileage strong')).to_have_text('6500')
+                    expect(page.locator('.message')).to_contain_text(f'Ascent browser {width}: mileage updated.')
+                    field.fill('6499')
+                    card.get_by_role('button', name='Save mileage', exact=True).click()
+                    expect(card.locator('.errorlist')).to_contain_text('Mileage cannot be lower')
+                    expect(field).to_have_value('6499')
+                    expect(page.locator('.vehicle-card .errorlist')).to_have_count(1)
+                    expect(card.get_by_role('link', name='Correct reading', exact=True)).to_be_visible()
+                    assert page.evaluate('document.documentElement.scrollWidth <= window.innerWidth')
+                    page.screenshot(path=str(out/f'{width}-dashboard-error.png'))
+                    field.fill('6500')
+                    card.get_by_role('button', name='Save mileage', exact=True).click()
+                    expect(page.locator('.message')).to_contain_text('already recorded for today')
+                    db.submit(assert_saved, f'Ascent browser {width}', 6500, 4 if width == 1440 else 5).result()
+                    if width == 1440:
+                        db.submit(assert_saved, 'Ascent browser 390', 6002, 4).result()
+                    page.screenshot(path=str(out/f'{width}-dashboard.png'))
+                    context.close()
+
+                context = browser.new_context(java_script_enabled=False, viewport={'width': 390, 'height': 844})
+                context.add_cookies([cookie])
+                page = context.new_page()
+                page.goto(base+'/')
+                card = page.get_by_role('article', name='Ascent browser 390', exact=True)
+                card.get_by_label('Current odometer (miles)').fill('6501')
+                card.get_by_role('button', name='Save mileage', exact=True).click()
+                expect(card.locator('.card-mileage strong')).to_have_text('6501')
+                db.submit(assert_saved, 'Ascent browser 390', 6501, 6).result()
+                db.submit(assert_saved, 'Ascent browser 1440', 6500, 4).result()
+                page.screenshot(path=str(out/'390-dashboard-no-js.png'))
                 browser.close()
             assert not errors, errors
         finally:
             server.shutdown()
             server.server_close()
             thread.join(timeout=5)
-        print('PASS: Ascent setup, inline mileage, recalculation, validation, duplicate save, both views, keyboard, mobile, no-JS, vehicle isolation, video fallback')
+        print('PASS: Ascent setup, inline mileage, recalculation, validation, duplicate save, both views, keyboard, mobile, no-JS, vehicle isolation, video fallback, dashboard card saves')
 
 
 if __name__ == '__main__':

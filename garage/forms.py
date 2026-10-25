@@ -80,6 +80,13 @@ class QuickMileageForm(forms.Form):
         widget=forms.NumberInput(attrs={"id": "id_quick_miles", "inputmode": "numeric",
                                         "aria-describedby": "quick-mileage-help"}))
 
+    def __init__(self, *args, vehicle_id=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if vehicle_id is not None:
+            self.fields["miles"].widget.attrs.update(
+                id=f"id_quick_miles_{vehicle_id}",
+                **{"aria-describedby": f"quick-mileage-help-{vehicle_id}"})
+
 
 class ReadingForm(StyledForm):
     class Meta:

@@ -1,4 +1,4 @@
-image: image-registry.openshift-image-registry.svc:5000/vehicle-maintenance/garage@sha256:3eaddf70b2bc7ef325bf6542a122e6730cf97e405be45daea33bf6926550c367
+image: image-registry.openshift-image-registry.svc:5000/vehicle-maintenance/garage@sha256:68afea85ec8ab04ecb027a64408df957ee8d1dd0dd3940572128144372751131
 databaseImage: docker.io/library/postgres@sha256:3cec7eb015ba8adb28139fa5c83b8489cdf0e666e53dfdf20f598ae0cc8739e3
 host: garage.apps.sno.batchelor.live
 googleAuthRequired: true

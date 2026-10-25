@@ -41,15 +41,22 @@ def owned_vehicle(request,pk):
 def home(request):
     if request.google_authenticated and not request.garage:return redirect("account-welcome")
     if not request.garage:return render(request,"garage/welcome.html")
+    return render_dashboard(request)
+
+
+def render_dashboard(request, *, mileage_vehicle_id=None, mileage_form=None):
     cars=[]; counts={"overdue":0,"due":0,"due-soon":0,"unknown":0}
     for car in request.garage.vehicles.select_related("configuration__schedule").order_by("created_at"):
         rows=recommendations(car)
         for row in rows:
             status=row["due"].status
             if status in counts and not row["rule"].optional:counts[status]+=1
-        cars.append({"vehicle":car,"reading":car.latest_reading,"attention":sum(r["due"].status in ["overdue","due","due-soon"] and not r["rule"].optional for r in rows)})
+        reading = car.latest_reading
+        form = mileage_form if car.pk == mileage_vehicle_id else QuickMileageForm(
+            initial={"miles": reading.miles if reading else None}, vehicle_id=car.pk)
+        cars.append({"vehicle":car,"reading":reading,"mileage_form":form,"attention":sum(r["due"].status in ["overdue","due","due-soon"] and not r["rule"].optional for r in rows)})
     appointments=Appointment.objects.filter(vehicle__garage=request.garage,cancelled=False,date__gte=timezone.localdate()).select_related("vehicle__configuration")[:5]
-    return render(request,"garage/dashboard.html",{"cars":cars,"counts":counts,"appointments":appointments})
+    return render(request,"garage/dashboard.html",{"cars":cars,"counts":counts,"appointments":appointments,"mileage_date":timezone.localdate()})
 
 @require_POST
 def start(request):
@@ -191,17 +198,24 @@ def vehicle_delete(request,pk):
 def reading_form(request,pk,reading_id=None):
     car=owned_vehicle(request,pk)
     if request.method == "POST" and request.POST.get("mode") == "quick" and reading_id is None:
-        form = QuickMileageForm(request.POST)
+        return_to_garage = request.POST.get("return_to") == "garage"
+        form = QuickMileageForm(request.POST, vehicle_id=car.pk if return_to_garage else None)
         if form.is_valid():
             try:
                 _, created = update_current_mileage(car, form.cleaned_data["miles"])
             except ValidationError as exc:
                 form.add_error("miles", exc)
             else:
+                if return_to_garage:
+                    messages.success(request, f"{car}: mileage updated. Maintenance status has been recalculated." if created
+                                     else f"{car}: this mileage is already recorded for today. Maintenance status is up to date.")
+                    return redirect(reverse("home") + f"#vehicle-{car.pk}")
                 messages.success(request, "Mileage updated. Maintenance status has been recalculated." if created
                                  else "This mileage is already recorded for today. Maintenance status is up to date.")
                 url = reverse("vehicle-detail", args=[car.pk])
                 return redirect(url + ("?view=list" if request.POST.get("view") == "list" else ""))
+        if return_to_garage:
+            return render_dashboard(request, mileage_vehicle_id=car.pk, mileage_form=form)
         return render_vehicle(request, car, mileage_form=form, maintenance_view=request.POST.get("view"))
     # Historical readings/corrections share the same vehicle lock as quick saves.
     if request.method == "POST":

@@ -25,8 +25,10 @@ preserve current behavior unless the user's request changes it.
 - The default vehicle view is a mileage timeline; Detailed list retains the
   existing filters. Single/batch completion confirms mileage once and uses
   durable receipts to prevent duplicate records on retry.
-- Both views include an inline current-mileage form. Quick saves use the garage's
-  local date, serialize on the vehicle, and deduplicate identical same-day readings.
+- Garage summary cards and both vehicle views include an inline current-mileage form.
+  Summary saves return to the affected card and recalculate garage totals. Quick
+  saves use the garage's local date, serialize on the vehicle, and deduplicate
+  identical same-day readings.
   They preserve service history and assumptions and never copy old engine hours.
 - New vehicles default to a disclosed maintenance assumption, separate from
   real service records. Upcoming shows required before optional work. Filters
