@@ -1,5 +1,17 @@
 {% extends 'base.html' %}{% block content %}<a class="back" href="{% url 'home' %}">← My garage</a><div class="page-heading"><div><p class="eyebrow">{{ vehicle.configuration.year }} · {{ vehicle.configuration.make }} · {{ vehicle.configuration.trim }}</p><h1>{{ vehicle }}</h1><p class="muted">{{ vehicle.configuration.engine }} · {{ vehicle.configuration.transmission }} · {{ vehicle.configuration.drivetrain }} <a href="{% url 'vehicle-edit' vehicle.pk %}">Edit details</a></p></div><div class="actions"><a class="button secondary" href="{% url 'record-add' vehicle.pk %}">Log service</a><a class="button primary" href="{% url 'appointment-add' vehicle.pk %}">＋ Plan service</a></div></div>
-<div class="mileage-strip"><div><strong>{{ reading.miles|default:0 }}</strong> miles <span class="muted">· Recorded {{ reading.date|date:'M j, Y' }}{% if reading.engine_hours != None %} · {{ reading.engine_hours }} engine hours{% endif %}</span></div><div class="actions"><a href="{% url 'reading-add' vehicle.pk %}">Update mileage ↗</a>{% if reading %}{% if reading.item_id %}<a class="small muted" href="{% url 'record-edit' vehicle.pk reading.pk %}">Correct record</a>{% else %}<a class="small muted" href="{% url 'reading-edit' vehicle.pk reading.pk %}">Correct reading</a>{% endif %}{% endif %}</div></div>
+<section class="mileage-strip" aria-label="Vehicle mileage">
+  <div class="mileage-observation">
+    {% if reading %}<strong>{{ reading.miles }}</strong> miles <span class="muted">· Recorded {{ reading.date|date:'M j, Y' }}{% if reading.engine_hours != None %} · {{ reading.engine_hours }} engine hours{% endif %}</span>
+    {% else %}<span class="muted">No mileage recorded yet.</span>{% endif %}
+    <div class="actions small"><a href="{% url 'reading-add' vehicle.pk %}">Other date or engine hours</a>{% if reading %}{% if reading.item_id %}<a href="{% url 'record-edit' vehicle.pk reading.pk %}">Correct record</a>{% else %}<a href="{% url 'reading-edit' vehicle.pk reading.pk %}">Correct reading</a>{% endif %}{% endif %}</div>
+  </div>
+  <form method="post" action="{% url 'reading-add' vehicle.pk %}" class="quick-mileage" id="quick-mileage">
+    {% csrf_token %}<input type="hidden" name="mode" value="quick"><input type="hidden" name="view" value="{{ maintenance_view }}">
+    {{ mileage_form.non_field_errors }}
+    <div class="quick-mileage-controls"><div class="field">{{ mileage_form.miles.label_tag }}{{ mileage_form.miles }}{{ mileage_form.miles.errors }}</div><button class="button primary" type="submit">Save mileage</button></div>
+    <p class="helptext" id="quick-mileage-help">Records today, {{ mileage_date|date:'M j, Y' }}. Updates maintenance status without logging service.</p>
+  </form>
+</section>
 {% if vehicle.assumed_through_date %}<div class="panel"><h3>Starting with maintenance up to date</h3><p class="muted small">Scheduled maintenance through {{ vehicle.assumed_through_miles }} miles on {{ vehicle.assumed_through_date|date:'M j, Y' }} is assumed complete. Recommendations show the next intervals. Logged service and individual history choices override this assumption. <a href="{% url 'vehicle-edit' vehicle.pk %}">Change this setting</a></p></div>{% endif %}
 <nav class="maintenance-views" aria-label="Maintenance view">
 <a class="button {% if maintenance_view == 'timeline' %}primary{% else %}secondary{% endif %}" href="{% url 'vehicle-detail' vehicle.pk %}" {% if maintenance_view == 'timeline' %}aria-current="page"{% endif %}>Timeline</a>

@@ -1,6 +1,8 @@
 # Manufacturer dataset review
 
-Dataset version: `2026.10.09.2`. Market: United States. Reviewed October 9, 2026.
+Schedule versions: `2026.10.09.2` for existing vehicles; `2026.10.25.1` for the
+2026 Ascent Limited. Market: United States. Ascent reviewed October 25, 2026;
+existing schedules retain their October 9 review and unchanged rules.
 
 The catalog contains factual intervals and paraphrased applicability notes, not
 copies of the manuals. Source PDFs are downloaded for review outside the repo.
@@ -52,6 +54,39 @@ the page-28 table and read page-29 notes and page-27 continuation guidance.
 - Factory coolant: first 137,500/132; subsequent 75,000/72.
 - Severe conditions are mapped by the item numbers in the notes. Repeated towing brings CVT replacement to 24,855 miles and differential replacement to 15,000/15.
 - Brake-fluid replacement remains distinct from the additional severe-use fluid inspection; high humidity/mountainous operation shortens replacement to 15,000/15.
+
+## Subaru Ascent — 2026, normal use
+
+Source: US 2026 Warranty and Maintenance Booklet,
+`6680519_26a_Subaru_Warranty_and_Maintenance_TEXT_HR_051925.pdf`.
+SHA-256: `efefdeb029aa8310e2a5626c0a2eb018136681e3b8b6044ae38ba6a0d9e00e82`.
+The stable source link is Subaru's 2026 Ascent Limited vehicle-resources page;
+its public `/services/documentation/trim/TCL` listing supplies the booklet's
+temporary download URL. Do not store signed download parameters in the catalog.
+Visually reviewed PDF page 28 and read pages 27 (continuation) and 29 (notes).
+
+- Configuration: Limited, 2.4L turbo flat-four, CVT, AWD. Seating does not change
+  the reviewed maintenance table. Manual/clutch and BRZ-only rows are excluded.
+- Oil/filter and tire rotation: 6,000 miles/6 months. Cabin filter, brake-system,
+  pad/disc, axle-boot/joint, and steering/suspension inspections: 12,000/12.
+- Air filter and brake-fluid replacement, drive belts, fuel lines, cooling system,
+  and differential inspections: 30,000/30. CVT **inspection**: 36,000/36; do not
+  copy the existing Crosstrek catalog's 30,000/30 interval or label it replacement.
+- Spark plugs and wheel-bearing inspection: 60,000/60. Fuel filter: 72,000/72.
+- Factory coolant: first 137,500 miles/132 months, then 75,000/72. Preserve
+  page-29 note 10's conditioner instruction and distinguish first/subsequent work.
+- Tire wear, filter contamination/dust, and warranty-related footnotes remain
+  notes, not invented extra replacement deadlines. Inspection includes correcting
+  or replacing components when necessary.
+- Normal use is the reviewed scope. The page-29 severe-condition item numbers
+  do not consistently align with the renumbered page-28 table. No severe-use
+  toggles or inferred remapping are published for this configuration. Drivers
+  with those conditions need additional source review before relying on this
+  normal-use schedule alone.
+
+The new schedule reuses existing maintenance item types without changing their
+meaning. All earlier source, item, schedule, and configuration entries are kept
+unchanged; the catalog regression test verifies that published snapshot.
 
 ## Calculation interpretation and limits
 

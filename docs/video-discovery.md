@@ -64,9 +64,9 @@ claims as well as account ownership. SQLite deliberately skips those locking tes
 The manifest in `scripts/evaluate_videos.py` has 40 fixed cases:
 
 - 20 development cases: oil, engine filter, spark plugs and brake inspection for
-  all five configurations.
+  the original five configurations.
 - 10 held-out cases: coolant replacement and the applicable transmission-fluid
-  service for all five configurations.
+  service for the original five configurations.
 - 10 targeted cases: front/rear differentials, filter inspection/replacement,
   CVT inspection and brake-fluid inspection.
 
@@ -76,6 +76,13 @@ algorithm separately. Query responses are reused within the temporary artifact;
 filter changes can be replayed without more API searches. The fixed held-out set
 is useful for regression but must not be described as unseen after its results
 have been inspected or used to fix bugs.
+
+The original five configuration keys are explicitly fixed in the evaluator so
+new catalog entries do not silently alter this benchmark or its held-out set.
+The 2026 Ascent has synthetic matching/conflict tests and a keyless browser
+fallback check; no live Ascent video-relevance benchmark has been completed.
+Search version 3 recognizes Ascent as a conflicting model for other vehicles
+and rejects explicit non-turbo engine descriptions for the turbo Ascent.
 
 ```sh
 # Explicit live access, at most 20 search attempts this invocation.

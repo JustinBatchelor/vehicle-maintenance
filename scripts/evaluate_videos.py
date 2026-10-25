@@ -17,6 +17,11 @@ import sys
 from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[1]
+# Keep the original 40-case comparison stable when the maintenance catalog grows.
+BENCHMARK_CONFIGURATIONS = (
+    'ford-f150-2010-4x2', 'ford-f150-2010-4x4', 'nissan-altima-2012-cvt',
+    'nissan-altima-2012-manual-coupe', 'subaru-crosstrek-2021-limited',
+)
 # This short process uses the already-deployed key and limiter, not new app code.
 # No key or API URL is returned, even on provider failures.
 REMOTE_FETCH = '''
@@ -56,13 +61,13 @@ except Exception:
 def cases():
     catalog = json.loads((ROOT / 'data/schedules.json').read_text())
     items = {i['key']: SimpleNamespace(**i) for i in catalog['items']}
+    configs = {c['key']: SimpleNamespace(**c) for c in catalog['configurations']}
     result = []
-    for config in catalog['configurations']:
-        c = SimpleNamespace(**config)
+    for key in BENCHMARK_CONFIGURATIONS:
+        c = configs[key]
         transmission_item = 'at-fluid' if '6R80' in c.transmission else 'mt-replace' if 'manual' in c.transmission else 'cvt-replace'
         for index, key in enumerate(['oil', 'air', 'plugs', 'brakes', 'coolant', transmission_item]):
             result.append((c, items[key], 'dev' if index < 4 else 'holdout'))
-    configs = {c['key']: SimpleNamespace(**c) for c in catalog['configurations']}
     for config, keys in [
         ('ford-f150-2010-4x4', ['front-diff', 'rear-diff', 'air-check']),
         ('nissan-altima-2012-cvt', ['cabin', 'cabin-check', 'cvt']),

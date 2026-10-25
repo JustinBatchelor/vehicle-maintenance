@@ -25,6 +25,9 @@ preserve current behavior unless the user's request changes it.
 - The default vehicle view is a mileage timeline; Detailed list retains the
   existing filters. Single/batch completion confirms mileage once and uses
   durable receipts to prevent duplicate records on retry.
+- Both views include an inline current-mileage form. Quick saves use the garage's
+  local date, serialize on the vehicle, and deduplicate identical same-day readings.
+  They preserve service history and assumptions and never copy old engine hours.
 - New vehicles default to a disclosed maintenance assumption, separate from
   real service records. Upcoming shows required before optional work. Filters
   are temporary and start at All maintenance.
@@ -33,7 +36,8 @@ preserve current behavior unless the user's request changes it.
 - YouTube discovery uses the server-side API key in the existing `google-oauth`
   Secret. Search links remain available when cards cannot load.
 - Maintenance coverage is reviewed and finite: 2010 Ford F-150 King Ranch,
-  2012 Nissan Altima 3.5 SR, and 2021 Subaru Crosstrek Limited. Dynamic videos
+  2012 Nissan Altima 3.5 SR, 2021 Subaru Crosstrek Limited, and normal-use
+  2026 Subaru Ascent Limited (2.4L turbo/CVT/AWD). Dynamic videos
   do not establish manufacturer schedule coverage for other vehicles.
 
 ## Find the change surface
@@ -42,6 +46,7 @@ preserve current behavior unless the user's request changes it.
 | --- | --- |
 | Page layout, mobile behavior, filters | `templates/`, `static/app.css`, `static/app.js` |
 | Vehicle setup, history, appointments, exports | `garage/forms.py`, `garage/views.py`, `garage/urls.py` |
+| Inline mileage updates | `garage/mileage.py`, `tests/test_mileage.py`, `scripts/check_ascent_mileage.py` |
 | Models, ownership, observations | `garage/models.py`, `garage/migrations/`, `garage/middleware.py` |
 | Timeline grouping and quick completion | `garage/services.py`, `garage/completions.py`, `tests/test_timeline.py`, `scripts/check_timeline.py` |
 | Due calculations and applicability | `garage/calculator.py`, `garage/services.py`, `tests/test_calculator.py`, `tests/test_assumptions.py` |

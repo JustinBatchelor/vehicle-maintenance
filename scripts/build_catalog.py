@@ -39,8 +39,8 @@ dict(key="ford-2010",title="2010 Ford Scheduled Maintenance Guide",publication="
 dict(key="nissan-2012",title="2012 Nissan Service and Maintenance Guide",publication="2012 US maintenance booklet",url="https://owners.nissanusa.com/content/techpub/common/2012/2012-nissan-service-maintenance-guide.pdf",sha256="37a6b9425a73ffa0c59b9f71b00471c7a9dc202dc7fcda6259da8f75dd78231e"),
 dict(key="subaru-2021",title="2021 Subaru Warranty and Maintenance Booklet",publication="MSA5M2101W, US",url="https://techinfo.subaru.com/stis/doc/warrantyBooklet/2021_war_and_maint__081120.pdf",sha256="11afb9c2faaf27e068fd162c4f4315f187e6599d38c714374389de49f23b7984")]
 schedules=[]; configs=[]
-def schedule(key, source, notes):
-    s=dict(key=key,version="2026.10.09.2",source=source,reviewed=True,reviewed_on="2026-10-09",review_notes=notes,rules=[])
+def schedule(key, source, notes, *, version="2026.10.09.2", reviewed_on="2026-10-09"):
+    s=dict(key=key,version=version,source=source,reviewed=True,reviewed_on=reviewed_on,review_notes=notes,rules=[])
     schedules.append(s);return s
 def rule(s,key,miles=None,months=None,page=1,**kw):
     s["rules"].append(dict(key=f"{key}-{len(s['rules'])}",item=key,miles=miles,months=months,page=page,**kw))
@@ -136,6 +136,33 @@ rule(s,"brake-fluid",15000,15,29,conditions_any=["humidity"],priority=10)
 rule(s,"brake-fluid-check",6000,6,29,conditions_any=["rough","salt","towing"],notes="Additional severe-use inspection from footnote 6. Does not replace the brake-fluid replacement interval.")
 rule(s,"diff-replace",15000,15,29,conditions_any=["towing"])
 rule(s,"cvt-replace",24855,page=29,conditions_any=["towing"],basis="service")
+
+sources.append(dict(
+    key="subaru-2026", title="2026 Subaru Warranty and Maintenance Booklet",
+    publication="US, 6680519_26a_Subaru_Warranty_and_Maintenance_TEXT_HR_051925.pdf",
+    url="https://www.subaru.com/owners/vehicle-resources.html?model=2026-ASC-TCL",
+    sha256="efefdeb029aa8310e2a5626c0a2eb018136681e3b8b6044ae38ba6a0d9e00e82"))
+a=schedule("ascent-2026", "subaru-2026",
+    "US 2026 table p.28, notes p.29, continuation p.27. Limited 2.4L turbo CVT AWD. "
+    "Normal use only; severe-use conditions are not reviewed for this configuration. "
+    "CVT inspection is 36,000 miles/36 months. Excludes manual-clutch/transmission and BRZ-only rows.",
+    version="2026.10.25.1", reviewed_on="2026-10-25")
+config("subaru-ascent-2026-limited", "Subaru", "Ascent", 2026, "Limited",
+       "2.4L turbo flat-four", "CVT", "AWD", a, {})
+rule(a,"oil",6000,6,28,basis="service",notes="Normal use. Note 1 on p.29 specifies shorter intervals under severe use; this configuration covers normal use only.")
+rule(a,"tires",6000,6,28,notes="Rotate and inspect. Replace when the tread wear indicator appears; see note 9 on p.29.")
+rule(a,"plugs",60000,60,28)
+for key in ["belts","air","cooling","diff","brake-fluid"]:
+    rule(a,key,30000,30,28)
+rule(a,"fuel-lines",30000,30,28,notes="Inspection is not required for emissions-warranty eligibility; see notes 6 and 7 on p.29.")
+rule(a,"cvt",36000,36,28,notes="Inspect CVT fluid under normal use; this is not a scheduled replacement. Severe-use replacement is a separate requirement in note 4 on p.29.")
+rule(a,"fuel-filter",72000,72,28,notes="Extreme heat/cold may require more frequent replacement due to contamination. Not required for emissions-warranty eligibility; notes 2 and 7 on p.29.")
+rule(a,"coolant",75000,72,28,basis="service",first_miles=137500,first_months=132,
+     notes="First 137,500 miles/11 years; then 75,000 miles/6 years. Note 10 on p.29 specifies Genuine Subaru Cooling System Conditioner when replacing coolant.")
+for key in ["brake-lines","brakes","boots","steering"]:
+    rule(a,key,12000,12,28)
+rule(a,"wheel-bearing",60000,60,28)
+rule(a,"cabin",12000,12,28,notes="Replace the HVAC A/C filter. Dust may require more frequent attention; see note 8 on p.29.")
 
 data=dict(schema_version=1,sources=sources,items=list(items.values()),schedules=schedules,configurations=configs)
 Path(__file__).resolve().parents[1].joinpath("data/schedules.json").write_text(json.dumps(data,indent=2)+"\n")

@@ -50,8 +50,18 @@ original order. Do not persist filters across pages/devices.
 
 Use `data/REVIEW.md` for source tables, footnotes and applicability decisions.
 The Ford source is the general `10frdmg2e.pdf`, not the Raptor supplement.
-There are multiple mechanical configurations within the three supported models;
+There are multiple mechanical configurations within the supported models;
 do not reduce coverage to trim names alone.
+
+The 2026 Ascent Limited has its own normal-use schedule (`2026.10.25.1`), with
+CVT inspection at 36,000 miles/36 months. Do not copy Crosstrek intervals or
+infer severe-condition mappings from the misaligned 2026 footnote item numbers.
+Existing schedules retain version `2026.10.09.2` and their original review dates.
+
+Quick mileage saves validate against the latest reading or service under a
+vehicle lock. Exact same-day reading retries are no-ops, including after a later
+reading. The full reading/correction form shares that lock. Preserve the frozen
+setup baseline and recorded services; a mileage update only changes the observation.
 
 Change the generator `scripts/build_catalog.py` and regenerate
 `data/schedules.json`; keep them consistent. Review changed tables/footnotes

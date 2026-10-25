@@ -21,6 +21,13 @@
       "publication": "MSA5M2101W, US",
       "url": "https://techinfo.subaru.com/stis/doc/warrantyBooklet/2021_war_and_maint__081120.pdf",
       "sha256": "11afb9c2faaf27e068fd162c4f4315f187e6599d38c714374389de49f23b7984"
+    },
+    {
+      "key": "subaru-2026",
+      "title": "2026 Subaru Warranty and Maintenance Booklet",
+      "publication": "US, 6680519_26a_Subaru_Warranty_and_Maintenance_TEXT_HR_051925.pdf",
+      "url": "https://www.subaru.com/owners/vehicle-resources.html?model=2026-ASC-TCL",
+      "sha256": "efefdeb029aa8310e2a5626c0a2eb018136681e3b8b6044ae38ba6a0d9e00e82"
     }
   ],
   "items": [
@@ -1409,6 +1416,153 @@
           "basis": "service"
         }
       ]
+    },
+    {
+      "key": "ascent-2026",
+      "version": "2026.10.25.1",
+      "source": "subaru-2026",
+      "reviewed": true,
+      "reviewed_on": "2026-10-25",
+      "review_notes": "US 2026 table p.28, notes p.29, continuation p.27. Limited 2.4L turbo CVT AWD. Normal use only; severe-use conditions are not reviewed for this configuration. CVT inspection is 36,000 miles/36 months. Excludes manual-clutch/transmission and BRZ-only rows.",
+      "rules": [
+        {
+          "key": "oil-0",
+          "item": "oil",
+          "miles": 6000,
+          "months": 6,
+          "page": 28,
+          "basis": "service",
+          "notes": "Normal use. Note 1 on p.29 specifies shorter intervals under severe use; this configuration covers normal use only."
+        },
+        {
+          "key": "tires-1",
+          "item": "tires",
+          "miles": 6000,
+          "months": 6,
+          "page": 28,
+          "notes": "Rotate and inspect. Replace when the tread wear indicator appears; see note 9 on p.29."
+        },
+        {
+          "key": "plugs-2",
+          "item": "plugs",
+          "miles": 60000,
+          "months": 60,
+          "page": 28
+        },
+        {
+          "key": "belts-3",
+          "item": "belts",
+          "miles": 30000,
+          "months": 30,
+          "page": 28
+        },
+        {
+          "key": "air-4",
+          "item": "air",
+          "miles": 30000,
+          "months": 30,
+          "page": 28
+        },
+        {
+          "key": "cooling-5",
+          "item": "cooling",
+          "miles": 30000,
+          "months": 30,
+          "page": 28
+        },
+        {
+          "key": "diff-6",
+          "item": "diff",
+          "miles": 30000,
+          "months": 30,
+          "page": 28
+        },
+        {
+          "key": "brake-fluid-7",
+          "item": "brake-fluid",
+          "miles": 30000,
+          "months": 30,
+          "page": 28
+        },
+        {
+          "key": "fuel-lines-8",
+          "item": "fuel-lines",
+          "miles": 30000,
+          "months": 30,
+          "page": 28,
+          "notes": "Inspection is not required for emissions-warranty eligibility; see notes 6 and 7 on p.29."
+        },
+        {
+          "key": "cvt-9",
+          "item": "cvt",
+          "miles": 36000,
+          "months": 36,
+          "page": 28,
+          "notes": "Inspect CVT fluid under normal use; this is not a scheduled replacement. Severe-use replacement is a separate requirement in note 4 on p.29."
+        },
+        {
+          "key": "fuel-filter-10",
+          "item": "fuel-filter",
+          "miles": 72000,
+          "months": 72,
+          "page": 28,
+          "notes": "Extreme heat/cold may require more frequent replacement due to contamination. Not required for emissions-warranty eligibility; notes 2 and 7 on p.29."
+        },
+        {
+          "key": "coolant-11",
+          "item": "coolant",
+          "miles": 75000,
+          "months": 72,
+          "page": 28,
+          "basis": "service",
+          "first_miles": 137500,
+          "first_months": 132,
+          "notes": "First 137,500 miles/11 years; then 75,000 miles/6 years. Note 10 on p.29 specifies Genuine Subaru Cooling System Conditioner when replacing coolant."
+        },
+        {
+          "key": "brake-lines-12",
+          "item": "brake-lines",
+          "miles": 12000,
+          "months": 12,
+          "page": 28
+        },
+        {
+          "key": "brakes-13",
+          "item": "brakes",
+          "miles": 12000,
+          "months": 12,
+          "page": 28
+        },
+        {
+          "key": "boots-14",
+          "item": "boots",
+          "miles": 12000,
+          "months": 12,
+          "page": 28
+        },
+        {
+          "key": "steering-15",
+          "item": "steering",
+          "miles": 12000,
+          "months": 12,
+          "page": 28
+        },
+        {
+          "key": "wheel-bearing-16",
+          "item": "wheel-bearing",
+          "miles": 60000,
+          "months": 60,
+          "page": 28
+        },
+        {
+          "key": "cabin-17",
+          "item": "cabin",
+          "miles": 12000,
+          "months": 12,
+          "page": 28,
+          "notes": "Replace the HVAC A/C filter. Dust may require more frequent attention; see note 8 on p.29."
+        }
+      ]
     }
   ],
   "configurations": [
@@ -1521,6 +1675,19 @@
         "humidity": "High humidity or mountainous areas",
         "hot": "Extremely hot weather"
       },
+      "equipment_options": {}
+    },
+    {
+      "key": "subaru-ascent-2026-limited",
+      "make": "Subaru",
+      "model": "Ascent",
+      "year": 2026,
+      "trim": "Limited",
+      "engine": "2.4L turbo flat-four",
+      "transmission": "CVT",
+      "drivetrain": "AWD",
+      "schedule": "ascent-2026",
+      "condition_options": {},
       "equipment_options": {}
     }
   ]

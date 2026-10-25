@@ -74,6 +74,13 @@ def validate_timeline(vehicle, date, miles, exclude_record=None, exclude_reading
     if any(d < date and m > miles or d > date and m < miles for d,m in points):
         raise ValidationError("Mileage conflicts with earlier or later records. Correct the conflicting reading first.")
 
+class QuickMileageForm(forms.Form):
+    miles = forms.IntegerField(
+        min_value=0, max_value=3000000, label="Current odometer (miles)",
+        widget=forms.NumberInput(attrs={"id": "id_quick_miles", "inputmode": "numeric",
+                                        "aria-describedby": "quick-mileage-help"}))
+
+
 class ReadingForm(StyledForm):
     class Meta:
         model = OdometerReading

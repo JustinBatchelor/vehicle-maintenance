@@ -18,7 +18,7 @@ from .models import VideoSearchCache
 from .video_profiles import PROFILES, PROFILE_VERSION
 
 logger = logging.getLogger(__name__)
-SEARCH_VERSION = 2
+SEARCH_VERSION = 3
 MATCH_LABEL = 'Possible vehicle and service match'
 NOTICES = {
     'matches': '',
@@ -106,7 +106,7 @@ def configuration_matches(text, c, dimensions):
              'dodge', 'ram', 'jeep', 'hyundai', 'kia', 'mazda', 'mitsubishi', 'volkswagen', 'bmw', 'audi'}
     if any(contains(r'\b' + make + r'\b', text) for make in makes - {c.make.lower()}):
         return False
-    models = {'f150', 'altima', 'crosstrek', 'outback', 'forester', 'impreza', 'legacy',
+    models = {'f150', 'altima', 'crosstrek', 'ascent', 'outback', 'forester', 'impreza', 'legacy',
               'sentra', 'maxima', 'rogue', 'titan', 'frontier', 'mustang', 'explorer', 'expedition', 'f250'}
     if any(contains(r'\b' + model + r'\b', text) for model in models - {normalize(c.model)}):
         return False
@@ -122,6 +122,8 @@ def configuration_matches(text, c, dimensions):
     if mentioned_engines and (not engine or any(e != engine[0] for e in mentioned_engines)):
         return False
     if 'engine' in dimensions and (not engine or engine[0] not in mentioned_engines):
+        return False
+    if 'turbo' in c.engine.lower() and contains(r'\b(?:naturally aspirated|non turbo|without (?:a )?turbo)\b', text):
         return False
     cylinder = re.search(r'\b[vh]([468])\b', normalize(c.engine))
     expected_cylinders = cylinder[1] if cylinder else ('4' if 'four' in c.engine.lower() else None)

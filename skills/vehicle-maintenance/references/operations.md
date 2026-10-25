@@ -49,6 +49,11 @@ uv run python scripts/check_timeline.py
 It covers desktop/mobile, keyboard selection, validation, batch and individual
 confirmation, history/mileage refresh, and the non-JavaScript fallback.
 
+`uv run python scripts/check_ascent_mileage.py` covers the new Ascent selection
+and inline-mileage workflow in a separate temporary database. Run it alongside
+the timeline regression check for mileage UI changes. `tests/test_mileage.py`
+includes PostgreSQL-only concurrent identical/different reading submissions.
+
 Video relevance checks have an additional local runner:
 
 ```sh

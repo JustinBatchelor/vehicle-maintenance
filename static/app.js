@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         input.type='checkbox'; input.name=field; input.value=value; input.id=`id_${field}_${index}`; input.checked=checked.has(value);
         label.htmlFor=input.id; label.append(input, document.createTextNode(text)); div.append(label); container.append(div);
       });
-      if (!Object.keys(choices).length) { const p=document.createElement('p'); p.className='helptext'; p.textContent=c?'No additional equipment to confirm.':'Choose a vehicle configuration first.'; container.append(p); }
+      if (!Object.keys(choices).length) { const p=document.createElement('p'); p.className='helptext'; p.textContent=c?(field==='conditions'?'Normal use only for this vehicle. Severe-use adjustments are not included.':'No additional equipment to confirm.'):'Choose a vehicle configuration first.'; container.append(p); }
     });
   };
   selectors.forEach((s,i) => s.addEventListener('change',()=>{ selectors.slice(i+1).forEach(x=>x.value=''); update(i+1); }));

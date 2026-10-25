@@ -19,9 +19,10 @@ from django.views.decorators.http import require_POST, require_http_methods
 from django.views.decorators.cache import never_cache
 from icalendar import Calendar, Event
 from .models import Garage, Vehicle, VehicleConfiguration, OdometerReading, ServiceRecord, Appointment, MaintenanceItem, CompletionSubmission
-from .forms import VehicleForm, ReadingForm, RecordForm, AppointmentForm, GarageForm, CompletionForm
+from .forms import VehicleForm, ReadingForm, RecordForm, AppointmentForm, GarageForm, CompletionForm, QuickMileageForm
 from .services import recommendations, applicable_rules, maintenance_timeline
 from .completions import complete_services
+from .mileage import update_current_mileage
 from .limits import consume, client_key
 from . import videos
 
@@ -126,10 +127,17 @@ def vehicle_form(request,pk=None):
 @private
 def vehicle_detail(request,pk):
     car=owned_vehicle(request,pk)
+    return render_vehicle(request, car)
+
+
+def render_vehicle(request, car, *, mileage_form=None, maintenance_view=None):
     rows=recommendations(car)
     reading=car.latest_reading
+    view = maintenance_view if maintenance_view is not None else request.GET.get("view")
     return render(request,"garage/vehicle.html",{"vehicle":car,"reading":reading,"rows":rows,
-        "maintenance_view": "list" if request.GET.get("view") == "list" else "timeline",
+        "maintenance_view": "list" if view == "list" else "timeline",
+        "mileage_form": mileage_form if mileage_form is not None else QuickMileageForm(initial={"miles": reading.miles if reading else None}),
+        "mileage_date": timezone.localdate(),
         "timeline": maintenance_timeline(rows, reading),
         "records":car.records.select_related("item"),"appointments":car.appointments.prefetch_related("items")})
 
@@ -179,12 +187,37 @@ def vehicle_delete(request,pk):
     return render(request,"garage/confirm.html",{"object":car,"title":"Delete vehicle and all its history?"})
 
 @private
+@require_http_methods(["GET", "POST"])
 def reading_form(request,pk,reading_id=None):
     car=owned_vehicle(request,pk)
+    if request.method == "POST" and request.POST.get("mode") == "quick" and reading_id is None:
+        form = QuickMileageForm(request.POST)
+        if form.is_valid():
+            try:
+                _, created = update_current_mileage(car, form.cleaned_data["miles"])
+            except ValidationError as exc:
+                form.add_error("miles", exc)
+            else:
+                messages.success(request, "Mileage updated. Maintenance status has been recalculated." if created
+                                 else "This mileage is already recorded for today. Maintenance status is up to date.")
+                url = reverse("vehicle-detail", args=[car.pk])
+                return redirect(url + ("?view=list" if request.POST.get("view") == "list" else ""))
+        return render_vehicle(request, car, mileage_form=form, maintenance_view=request.POST.get("view"))
+    # Historical readings/corrections share the same vehicle lock as quick saves.
+    if request.method == "POST":
+        with transaction.atomic():
+            car = Vehicle.objects.select_for_update().get(pk=car.pk, garage=request.garage)
+            reading = get_object_or_404(OdometerReading, pk=reading_id, vehicle=car) if reading_id else None
+            form = ReadingForm(request.POST, instance=reading, vehicle=car)
+            if form.is_valid():
+                record = form.save(commit=False)
+                record.vehicle = car
+                record.save()
+                messages.success(request, "Mileage updated. Maintenance status has been recalculated.")
+                return redirect("vehicle-detail", pk=car.pk)
+        return render(request,"garage/form.html",{"form":form,"title":"Correct mileage reading" if reading else "Update mileage","vehicle":car})
     reading=get_object_or_404(OdometerReading,pk=reading_id,vehicle=car) if reading_id else None
-    form=ReadingForm(request.POST or None,instance=reading,vehicle=car)
-    if request.method=="POST" and form.is_valid():
-        record=form.save(commit=False);record.vehicle=car;record.save();return redirect("vehicle-detail",pk=car.pk)
+    form=ReadingForm(instance=reading,vehicle=car)
     return render(request,"garage/form.html",{"form":form,"title":"Correct mileage reading" if reading else "Update mileage","vehicle":car})
 
 @private
